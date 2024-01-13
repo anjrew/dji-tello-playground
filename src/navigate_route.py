@@ -1,8 +1,5 @@
 from djitellopy import Tello
-
 import time
-
-
 
 # Create a Tello instance
 tello = Tello()
@@ -19,9 +16,14 @@ for i in range(10, 0, -1):
 # Takeoff
 tello.takeoff()
 
-# Perform a simple movement
-distance_cm = 30
-tello.move_up(distance_cm)
+# Go forward 100 cm
+tello.move_forward(100)
+
+# Turn right
+tello.rotate_clockwise(90)
+
+# Go forward 150 cm
+tello.move_forward(150)
 
 # Land
 tello.land()

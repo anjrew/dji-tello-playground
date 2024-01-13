@@ -6,6 +6,8 @@
     "python.analysis.autoSearchPaths": true,
     "python.analysis.importFormat": "absolute",
     "editor.autoIndent": "full",
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
     "cSpell.words": [
         "Tello"
     ]
