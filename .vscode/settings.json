@@ -1,0 +1,11 @@
+{
+    "python.languageServer": "Pylance",
+    "python.analysis.typeCheckingMode": "strict",
+    "python.analysis.autoFormatStrings": true,
+    "python.analysis.autoSearchPaths": true,
+    "python.analysis.importFormat": "absolute",
+    "editor.autoIndent": "full",
+    "cSpell.words": [
+        "Tello"
+    ]
+}
