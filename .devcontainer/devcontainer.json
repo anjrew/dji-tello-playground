@@ -6,12 +6,15 @@
 	"build": {
 		"context": "..",
 		"dockerfile": "Dockerfile"
-		
 	},
 	// Features to add to the dev container. More info: https://containers.dev/features.
+	"features": {
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
 
+	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+	// "forwardPorts": [8890, 8889, 11111],
+	"appPort": ["8890:8890/udp", "8889:8889/udp", "11111:1117/udp"],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "pip3 install --user -r requirements.txt",
@@ -24,11 +27,13 @@
 				"ms-python.vscode-pylance",
 				"ms-azuretools.vscode-docker",
 				"GitHub.copilot",
-				"GitHub.copilot-chat"
+				"GitHub.copilot-chat",
+				"mhutchie.git-graph",
+				"ms-python.flake8",
+				"ms-python.black-formatter",
+				"yzhang.markdown-all-in-one"
 			],
 			"settings": {
-				"python.linting.enabled": true,
-				"python.linting.flake8Enabled": true,
 				"python.formatting.provider": "black"
 			}
 		}

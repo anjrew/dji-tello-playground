@@ -1,6 +1,7 @@
 {
     "python.languageServer": "Pylance",
-    "python.analysis.typeCheckingMode": "strict",
+    "python.defaultInterpreterPath": "python",
+    "python.analysis.typeCheckingMode": "basic",
     "python.analysis.autoFormatStrings": true,
     "python.analysis.autoSearchPaths": true,
     "python.analysis.importFormat": "absolute",
