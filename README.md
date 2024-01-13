@@ -14,9 +14,10 @@ We need to connect to the drone directly with WiFi with our computer before runn
 
 Find all the scripts in the `src` folder.
 
-1. Simple take off
-2. Follow with face detection
-3. Navigate route (bonus for fastest lap)
-4. Orchistrate swarm
-5. Do stunts
-6. Make deliveries
+1. Manual control with smart phone
+2. Simple take off
+3. Follow with face detection
+4. Navigate route (bonus for fastest lap)
+5. Orchistrate swarm
+6. Do stunts
+7. Make deliveries
