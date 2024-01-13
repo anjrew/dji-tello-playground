@@ -19,3 +19,4 @@ Find all the scripts in the `src` folder.
 3. Navigate route (bonus for fastest lap)
 4. Orchistrate swarm
 5. Do stunts
+6. Make deliveries
