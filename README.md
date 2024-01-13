@@ -122,3 +122,19 @@ Using VS Code Debugger with DJI Tello
 This guide covers everything from setting up VS Code to step-by-step instructions for using the debugger effectively.
 
 For more detailed instructions, troubleshooting, or to contribute to this project, please refer to our contribution guidelines and the issue tracker.
+
+
+## Dev Container with VS Code
+
+This project includes a dev container for VS Code. This allows you to develop and debug your code in a containerized environment. This is useful if you don't want to install Python and other dependencies on your local machine.
+
+**Note:** At the moment, the dev container is only working and tested on Ubuntu Linux systems.
+
+To use the dev container, follow these steps:
+
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop)
+2. Install the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension in VS Code
+3. Open the project in VS Code
+4. Click the green "Open a Remote Window" button in the bottom left corner of VS Code
+5. Select "Remote-Containers: Reopen in Container" from the menu
+6. VS Code will now build the dev container and open the project inside the container
