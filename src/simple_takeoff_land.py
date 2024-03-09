@@ -2,8 +2,6 @@ from djitellopy import Tello
 
 import time
 
-
-
 # Create a Tello instance
 tello = Tello()
 
@@ -15,14 +13,16 @@ for i in range(10, 0, -1):
     print(i)
     time.sleep(1)
 
-
 # Takeoff
+print("Take off")
 tello.takeoff()
 
-# Perform a simple movement
-distance_cm = 30
-tello.move_up(distance_cm)
+print("Hovering for...")
+for i in range(3, 0, -1):
+    print(i)
+    time.sleep(1)
 
+print("Landing")
 # Land
 tello.land()
 

@@ -16,14 +16,18 @@ for i in range(10, 0, -1):
 # Takeoff
 tello.takeoff()
 
-# Go forward 100 cm
-tello.move_forward(100)
+## Here change the commands to navigate though the course
 
-# Turn right
-tello.rotate_clockwise(90)
+# # Go forward 100 cm
+# tello.move_forward(100)
 
-# Go forward 150 cm
-tello.move_forward(150)
+# # Turn right
+# tello.rotate_clockwise(90)
+
+# # Go forward 150 cm
+# tello.move_forward(150)
+
+#####
 
 # Land
 tello.land()

@@ -2,48 +2,11 @@
 
 Welcome to the DJI Tello Drone Playground! This project is designed for enthusiasts and learners who want to explore the capabilities of the DJI Tello drone through a series of practical exercises.
 
-## Dependencies
+# Getting Started
 
-Before starting, ensure you have the following:
-
-- [Python 3.11](https://www.python.org/downloads/release/python-3115/) or newer
-
-## Setting Up Your Python Environment
-
-It's important to create a dedicated Python environment for this project to manage dependencies effectively. Follow these steps:
-
-### 1. Create a Virtual Environment
-   
-Navigate to the project directory in your terminal and run the following command:
-
-```bash
-python -m venv venv
-```
-
-This command creates a new virtual environment named venv in your project directory.
-
-Activate the Virtual Environment:
-On Windows, run:
-```bash
-.\venv\Scripts\activate
-```
-
-On macOS and Linux, run:
-```bash
-source venv/bin/activate
-```
-
-You'll notice the command prompt changes to indicate that the virtual environment is active.
-
-### 2. Install Dependencies
-
-With the virtual environment activated, install the project dependencies using:
-```bash
-pip install -r requirements.txt
-```
-
-This command reads the requirements.txt file and installs all the required Python packages.
-Remember to activate the virtual environment each time you work on this project.
+1. [Setup your development environment](./docs/setting_up_the_environment.md).
+2. Connect to the drone.
+3. Work through the exercises
 
 
 ## Setup Drone Connection
@@ -71,9 +34,9 @@ Dive into various exercises located in the `src` folder. Each script guides you 
 
 2. **Simple Takeoff**
    
-   Script for basic takeoff and landing.
+   [Script](./src/simple_takeoff_land.py) for basic takeoff and landing.
 
-   Here we will write a simple script to takeoff and land the drone. The drone will takeoff to a height of 1 meter, hover for a few seconds, and then land.
+   Here we will write a simple script to takeoff and land the drone. The drone will takeoff, hover for a few seconds, and then land.
 
 3. **Follow with Face Detection**
    
@@ -85,7 +48,7 @@ Dive into various exercises located in the `src` folder. Each script guides you 
    
    Program the drone to navigate a predefined route. Try to achieve the fastest lap for an added challenge!
 
-   In this challenge, we will program the drone to navigate a predefined route. The drone will takeoff to a height of 1 meter, and then navigate a predefined route. The route consists of 4 waypoints, and the drone must navigate to each waypoint in order. The drone will should land once the route is complete.
+   In this challenge, we will program the drone to navigate a predefined route. The drone will takeoff, and then navigate a predefined route. The drone must navigate to gate in order. The drone will should land once the route is complete.
 
 5. **Orchestrate Swarm**
    
