@@ -28,6 +28,7 @@ class FrontEnd(object):
 
         # Create pygame window
         pygame.display.set_caption("Tello video stream")
+
         self.screen = pygame.display.set_mode([960, 720])
 
         # Init Tello object that interacts with the Tello drone
@@ -47,15 +48,16 @@ class FrontEnd(object):
 
     def run(self):
 
-        if not self.tello.connect():
-            print("Tello not connected")
-            return
+        connected = self.tello.connect()
+        time.sleep(3)
 
-        if not self.tello.set_speed(self.speed):
+        speed_set = self.tello.set_speed(self.speed)
+
+        if not speed_set:
             print("Not set speed to lowest possible")
             return
 
-        # In case streaming is on. This happens when we quit this program without the escape key.
+        # In case streaming is on. This happens when we quit this program with out the escape key.
         if not self.tello.streamoff():
             print("Could not stop video stream")
             return
@@ -80,7 +82,7 @@ class FrontEnd(object):
                     else:
                         self.key_down(event.key)
                 elif event.type == KEYUP:
-                    self.keyup(event.key)
+                    self.key_up(event.key)
 
             if frame_read.stopped:
                 frame_read.stop()
@@ -121,7 +123,7 @@ class FrontEnd(object):
         elif key == pygame.K_d:  # set yaw counter clockwise velocity
             self.yaw_velocity = S
 
-    def keyup(self, key):
+    def key_up(self, key):
         """Update velocities based on key released
         Arguments:
             key: pygame key
@@ -159,7 +161,8 @@ class FrontEnd(object):
 def main():
     frontend = FrontEnd()
 
-    # run frontend
+    frontend.tello.connect()
+
     frontend.run()
 
 

@@ -6,7 +6,8 @@ Welcome to the DJI Tello Drone Playground! This project is designed for enthusia
 
 1. [Setup your development environment](./docs/setting_up_the_environment.md).
 2. Connect to the drone.
-3. Work through the exercises
+3. Create a new .env file in the root of the project based on the .env.template file.
+4. Work through the exercises
 
 ## Setup Drone Connection
 
@@ -87,6 +88,8 @@ For more detailed instructions, troubleshooting, or to contribute to this projec
 
 ## Other Resources
 
+- [SDK](https://dl-cdn.ryzerobotics.com/downloads/tello/20180910/Tello%20SDK%20Documentation%20EN_1.3.pdf)
 - [Api Repository](https://github.com/honglan3/dji-sdk-DJITelloPy?tab=readme-ov-file)
 - [Api Documentation](https://github.com/honglan3/dji-sdk-DJITelloPy?tab=readme-ov-file)
 - [Instruction Manual](https://dl-cdn.ryzerobotics.com/downloads/Tello/20180212/Tello+User+Manual+v1.0_EN_2.12.pdf)
+- [Swarm Programming](https://drive.google.com/file/d/1vV73j8Axua5dT8gTwts66TzexJLJBqKR/view)
