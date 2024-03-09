@@ -87,4 +87,6 @@ For more detailed instructions, troubleshooting, or to contribute to this projec
 
 ## Other Resources
 
+- [Api Repository](https://github.com/honglan3/dji-sdk-DJITelloPy?tab=readme-ov-file)
+- [Api Documentation](https://github.com/honglan3/dji-sdk-DJITelloPy?tab=readme-ov-file)
 - [Instruction Manual](https://dl-cdn.ryzerobotics.com/downloads/Tello/20180212/Tello+User+Manual+v1.0_EN_2.12.pdf)
