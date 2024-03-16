@@ -8,6 +8,10 @@
     "editor.autoIndent": "full",
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true,
+    "flake8.args": [
+        "--max-line-length=120",
+        "--ignore=E402",
+    ],
     "cSpell.words": [
         "Tello"
     ]
