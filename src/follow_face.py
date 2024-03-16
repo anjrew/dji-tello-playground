@@ -40,9 +40,14 @@ while True:
 
     frame = cam_output.frame
 
-    # Get the image height and width
-    frame_height, frame_width, _ = frame.shape
+    if frame is not None:
+        # Get the image height and width
+        frame_height, frame_width, _ = frame.shape
 
-    compressed_image = cv2.resize(
-        frame, (0, 0), fx=1 / IMAGE_COMPRESSION, fy=1 / IMAGE_COMPRESSION
-    )
+        compressed_image = cv2.resize(
+            frame,
+            (
+                int(frame_width / IMAGE_COMPRESSION),
+                int(frame_height / IMAGE_COMPRESSION),
+            ),
+        )

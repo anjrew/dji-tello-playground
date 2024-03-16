@@ -1,9 +1,9 @@
 from djitellopy import Tello
 import cv2
 import pygame
-from pygame.locals import *
 import numpy as np
 import time
+from pygame.locals import K_ESCAPE, KEYDOWN, KEYUP, QUIT, USEREVENT
 
 # Speed of the drone
 S = 60
@@ -48,23 +48,15 @@ class FrontEnd(object):
 
     def run(self):
 
-        connected = self.tello.connect()
+        self.tello.connect()
         time.sleep(3)
 
-        speed_set = self.tello.set_speed(self.speed)
-
-        if not speed_set:
-            print("Not set speed to lowest possible")
-            return
+        self.tello.set_speed(self.speed)
 
         # In case streaming is on. This happens when we quit this program with out the escape key.
-        if not self.tello.streamoff():
-            print("Could not stop video stream")
-            return
+        self.tello.streamoff()
 
-        if not self.tello.streamon():
-            print("Could not start video stream")
-            return
+        self.tello.streamon()
 
         frame_read = self.tello.get_frame_read()
 
@@ -89,10 +81,11 @@ class FrontEnd(object):
                 break
 
             self.screen.fill([0, 0, 0])
-            frame = cv2.cvtColor(frame_read.frame, cv2.COLOR_BGR2RGB)
-            frame = np.rot90(frame)
-            frame = np.flipud(frame)
-            frame = pygame.surfarray.make_surface(frame)
+            if frame_read.frame is not None:
+                frame = cv2.cvtColor(frame_read.frame, cv2.COLOR_BGR2RGB)
+                frame = np.rot90(frame)
+                frame = np.flipud(frame)
+                frame = pygame.surfarray.make_surface(frame)
             self.screen.blit(frame, (0, 0))
             pygame.display.update()
 
@@ -136,9 +129,11 @@ class FrontEnd(object):
             key == pygame.K_LEFT or key == pygame.K_RIGHT
         ):  # set zero left/right velocity
             self.left_right_velocity = 0
-        elif key == pygame.K_w or key == pygame.K_s:  # set zero up/down velocity
+        elif key == pygame.K_w or key == pygame.K_s:
+            # set zero up/down velocity
             self.up_down_velocity = 0
-        elif key == pygame.K_a or key == pygame.K_d:  # set zero yaw velocity
+        elif key == pygame.K_a or key == pygame.K_d:
+            # set zero yaw velocity
             self.yaw_velocity = 0
         elif key == pygame.K_t:  # takeoff
             self.tello.takeoff()
