@@ -57,3 +57,26 @@ def test_frontend_land(mock_tello_service):
     frontend.land()
     mock_tello_service.land.assert_called_once()
     assert frontend.state.send_rc_control is False
+
+
+def test_no_action_does_not_throw(mock_tello_service, mock_controller):
+
+    # Set up the mock controller to return specific actions
+    mock_controller.get_action.side_effect = [None, None, None, None]
+
+    frontend = FrontEnd(controller=mock_controller, tello_service=mock_tello_service)
+    frontend.run(max_iterations=4)  # Run for a specific number of iterations
+
+
+def test_landing_action_lands(mock_tello_service, mock_controller):
+
+    # Set up the mock controller to return specific actions
+    mock_controller.get_action.side_effect = [
+        TelloControlEvent(TelloActionType.TAKEOFF, 0),
+        TelloControlEvent(TelloActionType.LAND, 0),
+    ]
+
+    frontend = FrontEnd(controller=mock_controller, tello_service=mock_tello_service)
+    frontend.run(max_iterations=1)  # Run for a specific number of iterations
+
+    mock_tello_service.land.assert_called_once()

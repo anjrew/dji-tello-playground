@@ -1,3 +1,5 @@
+import logging
+import time
 from djitellopy import Tello, BackgroundFrameRead
 
 
@@ -25,6 +27,14 @@ class TelloService:
 
     def connect(self):
         self.tello.connect()
+        for second in range(3, 0, -1):
+            logging.info(f"Connecting in {second}")
+            time.sleep(1)
+
+        # In case streaming is on. This happens when we quit this program with out the escape key.
+        self.tello.streamoff()
+
+        self.tello.streamon()
 
     def set_speed(self, speed):
         self.tello.set_speed(speed)
@@ -33,15 +43,22 @@ class TelloService:
         self.tello.streamoff()
 
     def streamon(self):
+        logging.info("Restarting video stream")
+        time.sleep(1)
+        self.streamoff()
+        time.sleep(1)
         self.tello.streamon()
+        logging.info("Video stream on")
 
     def get_frame_read(self) -> BackgroundFrameRead:
         return self.tello.get_frame_read()
 
     def takeoff(self):
+        logging.info("Taking off...")
         self.tello.takeoff()
 
     def land(self):
+        logging.info("Landing...")
         self.tello.land()
 
     def send_rc_control(

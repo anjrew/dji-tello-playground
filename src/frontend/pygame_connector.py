@@ -4,6 +4,9 @@ from pygame.key import ScancodeWrapper
 
 class PyGameConnector:
 
+    def __init__(self):
+        pygame.init()
+
     def pump_events(self):
         pygame.event.pump()
 

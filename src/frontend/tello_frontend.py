@@ -27,11 +27,15 @@ class FrontEnd:
         self.state = FrontEndState()
 
     def run(self, max_iterations=math.inf):
+        self.tello_service.connect()
+        self.tello_service.streamon()
+
         frame_read = self.tello_service.get_frame_read()
         iteration = 0
         while iteration < max_iterations:
             action = self.controller.get_action()
-            self._update_tello(action)
+            if action:
+                self._update_tello(action)
 
             if frame_read.stopped:
                 frame_read.stop()
