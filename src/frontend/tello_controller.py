@@ -1,9 +1,7 @@
-import threading
-from queue import Queue
+import asyncio
 from abc import ABC, abstractmethod
 from typing import List
 
-import pygame
 from models.tello_control_event import TelloControlEvent
 from enums.tello_action_type import TelloActionType
 from pygame_connector import PyGameConnector
@@ -26,7 +24,7 @@ LOGGER = logging.getLogger(__name__)
 
 class Controller(ABC):
     @abstractmethod
-    def get_actions(self) -> List[TelloControlEvent]:
+    async def get_actions(self) -> List[TelloControlEvent]:
         pass
 
 
@@ -47,34 +45,33 @@ class KeyboardController(Controller):
             K_SPACE: TelloActionType.LAND,
         }
 
-        self.action_queue = Queue()
-        self.process_thread = threading.Thread(target=self._process_events)
-        self.process_thread.daemon = True
-        self.process_thread.start()
+        self.action_queue = asyncio.Queue()
 
         LOGGER.debug("Key Mappings:")
         for key, action in self._key_mapping.items():
-            print(f"{pygame_connector.get_key_name(key)}: {action.name}")
+            print(f"{pygame_connector.get_key_name(key).upper()}: {action.name}")
 
-    def _process_events(self):
+    async def _process_events(self):
         while True:
-            actions = []
-            for event in self._pygame_connector.get_events():
-                if event.type == pygame.KEYDOWN:
-                    key = event.key
-                    if key in self._key_mapping:
-                        action = self._key_mapping[key]
-                        intensity = 1.0  # Set intensity to 1.0 for key press events
-                        actions.append(TelloControlEvent(action, intensity))
-            for action in actions:
-                self.action_queue.put(action)
+            events = await asyncio.to_thread(self._pygame_connector.get_events)
+            for event in events:
+                key = event.key
+                if key in self._key_mapping:
+                    action = self._key_mapping[key]
+                    intensity = 1.0  # Set intensity to 1.0 for key press events
+                    await self.action_queue.put(TelloControlEvent(action, intensity))
 
-    def get_actions(self) -> List[TelloControlEvent]:
+    async def get_actions(self) -> List[TelloControlEvent]:
         LOGGER.debug(f"Getting actions from {self.__class__.__name__}")
         actions = []
+        await asyncio.sleep(0.1)
         while not self.action_queue.empty():
-            actions.append(self.action_queue.get())
+            action = await self.action_queue.get()
+            actions.append(action)
         return actions
+
+    async def run(self):
+        await asyncio.gather(self._process_events())
 
     def dispose(self):
         self._pygame_connector.dispose()

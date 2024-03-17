@@ -1,3 +1,4 @@
+import asyncio
 from dataclasses import dataclass, field
 import math
 import time
@@ -32,25 +33,22 @@ class FrontEnd:
         self.tello_service = tello_service
         self.state = FrontEndState()
 
-    def run(self, max_iterations=math.inf, cadence_secs: float = 1):
-        self.tello_service.connect()
-        self.tello_service.streamon()
-
-        frame_read = self.tello_service.get_frame_read()
+    async def run(self, max_iterations=math.inf, cadence_secs: float = 0.1):
+        frame_read = await asyncio.to_thread(self.tello_service.get_frame_read)
         iteration = 0
         while iteration < max_iterations:
-            time.sleep(cadence_secs)
-            actions = self.controller.get_actions()
-            self._update_tello(actions)
+            LOGGER.debug(f"Iteration {iteration}")
+            await asyncio.sleep(0.1)
+            actions = await self.controller.get_actions()
+
+            await asyncio.to_thread(self._update_tello, actions)
 
             if frame_read.stopped:
                 frame_read.stop()
                 break
-
             frame = frame_read.frame
             if frame is not None:
-                cv2.imshow("Tello Stream", frame)
-
+                await asyncio.to_thread(cv2.imshow, "Tello Stream", frame)
             key = cv2.waitKey(1) & 0xFF
             if key == 27:  # ESC key
                 break

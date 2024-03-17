@@ -36,10 +36,9 @@ class TelloService:
         LOGGER.debug("Connected to Tello")
 
         # In case streaming is on. This happens when we quit this program with out the escape key.
-        self.tello.streamoff()
+        self.streamoff()
 
-        self.tello.streamon()
-        LOGGER.debug("Video stream on")
+        self.streamon()
 
     def set_speed(self, speed):
         self.tello.set_speed(speed)
