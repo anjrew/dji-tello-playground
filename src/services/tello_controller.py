@@ -5,7 +5,7 @@ from pygame import K_KP_PLUS, K_k
 
 from models.tello_control_event import TelloControlEvent
 from enums.tello_action_type import TelloActionType
-from pygame_connector import PyGameConnector
+from services.pygame_connector import PyGameConnector
 
 from pygame.locals import (
     K_UP,

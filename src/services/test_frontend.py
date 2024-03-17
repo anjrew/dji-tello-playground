@@ -2,19 +2,19 @@ import logging
 import numpy as np
 import pytest
 from unittest.mock import MagicMock
-from pygame_connector import PyGameConnector
-from tello_service import TelloService
-from tello_controller import (
+from services.pygame_connector import PyGameConnector
+from services.tello_connector import TelloConnector
+from services.tello_controller import (
     Controller,
     TelloActionType,
     TelloControlEvent,
 )
-from tello_frontend import FrontEnd
+from services.tello_frontend import FrontEnd
 
 
 @pytest.fixture
 def mock_tello_service() -> MagicMock:
-    mock_service = MagicMock(spec=TelloService)
+    mock_service = MagicMock(spec=TelloConnector)
     mock_frame_read = MagicMock()
     mock_frame_read.stopped = False
     mock_frame_read.frame = np.zeros((480, 640, 3), dtype=np.uint8)
@@ -46,7 +46,7 @@ def test_frontend_run(mock_tello_service, mock_controller):
     frontend = FrontEnd(controller=mock_controller, tello_service=mock_tello_service)
     frontend.run(max_iterations=4)  # Run for a specific number of iterations
 
-    # Verify that the expected methods were called on the mock TelloService
+    # Verify that the expected methods were called on the mock TelloConnector
     mock_tello_service.takeoff.assert_called_once()
     mock_tello_service.send_rc_control.assert_called_with(0, 5, 0, 3)
     mock_tello_service.land.assert_called_once()

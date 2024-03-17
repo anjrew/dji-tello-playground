@@ -16,7 +16,7 @@ for i in range(10, 0, -1):
 # Takeoff
 tello.takeoff()
 
-## Here change the commands to navigate though the course
+# Here change the commands to navigate though the course
 
 # # Go forward 100 cm
 # tello.move_forward(100)

@@ -5,7 +5,7 @@ from djitellopy import Tello, BackgroundFrameRead
 LOGGER = logging.getLogger(__name__)
 
 
-class TelloService:
+class TelloConnector:
     """
     A class that provides a high-level interface for controlling the Tello drone.
 

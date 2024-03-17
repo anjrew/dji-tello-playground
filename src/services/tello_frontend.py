@@ -3,8 +3,8 @@ import math
 import time
 from typing import List
 import cv2
-from tello_service import TelloService
-from tello_controller import Controller, TelloActionType, TelloControlEvent
+from .tello_connector import TelloConnector
+from .tello_controller import Controller, TelloActionType, TelloControlEvent
 import logging
 
 
@@ -27,7 +27,7 @@ class FrontEndState:
 
 
 class FrontEnd:
-    def __init__(self, controller: Controller, tello_service: TelloService):
+    def __init__(self, controller: Controller, tello_service: TelloConnector):
         self.controller = controller
         self.tello_service = tello_service
         self.state = FrontEndState()

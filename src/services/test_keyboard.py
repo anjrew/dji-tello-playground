@@ -1,27 +1,19 @@
 import logging
 import numpy as np
 import pytest
-from unittest.mock import MagicMock, call
-from pygame_connector import PyGameConnector
-from tello_service import TelloService
-from tello_controller import (
+from unittest.mock import MagicMock
+from services.pygame_connector import PyGameConnector
+from services.tello_connector import TelloConnector
+from services.tello_controller import (
     Controller,
     KeyboardController,
     TelloActionType,
     TelloControlEvent,
 )
-from tello_frontend import FrontEnd
+from services.tello_frontend import FrontEnd
 from pygame.locals import (
     K_UP,
-    K_DOWN,
-    K_LEFT,
-    K_RIGHT,
-    K_w,
-    K_s,
-    K_a,
-    K_d,
     K_t,
-    K_SPACE,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -29,7 +21,7 @@ LOGGER = logging.getLogger(__name__)
 
 @pytest.fixture
 def mock_tello_service() -> MagicMock:
-    mock_service = MagicMock(spec=TelloService)
+    mock_service = MagicMock(spec=TelloConnector)
     mock_frame_read = MagicMock()
     mock_frame_read.stopped = False
     mock_frame_read.frame = np.zeros((480, 640, 3), dtype=np.uint8)
@@ -80,10 +72,7 @@ def test_speed_forward_increases(
     assert actions is not None
 
 
-def test_correct_values_come_through(
-    mock_pygame_wrapper: MagicMock, mock_tello_service: MagicMock
-):
-    ITERATIONS = 4  # minus take off
+def test_correct_values_come_through(mock_pygame_wrapper: MagicMock):
     KEY_STROKES = [
         [K_t],
         [K_UP],

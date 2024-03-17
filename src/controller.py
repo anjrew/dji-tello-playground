@@ -1,9 +1,9 @@
 import argparse
-from tello_service import TelloService
+from services.tello_connector import TelloConnector
 from djitellopy import Tello
-from pygame_connector import PyGameConnector
-from tello_controller import KeyboardController
-from tello_frontend import FrontEnd
+from services.pygame_connector import PyGameConnector
+from services.tello_controller import KeyboardController
+from services.tello_frontend import FrontEnd
 
 import logging
 
@@ -19,7 +19,7 @@ def main():
     pygame_connector = PyGameConnector()
     controller = KeyboardController(pygame_connector)
     tello = Tello()
-    tello_service = TelloService(tello)
+    tello_service = TelloConnector(tello)
     tello_service.connect()
     tello_service.streamon()
     frontend = FrontEnd(controller, tello_service)
