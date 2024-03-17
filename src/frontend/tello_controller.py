@@ -1,10 +1,12 @@
+import threading
+from queue import Queue
 from abc import ABC, abstractmethod
 from typing import List
 
+import pygame
 from models.tello_control_event import TelloControlEvent
 from enums.tello_action_type import TelloActionType
 from pygame_connector import PyGameConnector
-
 from pygame.locals import (
     K_UP,
     K_DOWN,
@@ -17,41 +19,19 @@ from pygame.locals import (
     K_t,
     K_SPACE,
 )
-
 import logging
 
 LOGGER = logging.getLogger(__name__)
 
 
 class Controller(ABC):
-
     @abstractmethod
     def get_actions(self) -> List[TelloControlEvent]:
         pass
 
 
 class KeyboardController(Controller):
-    """
-    A class representing a keyboard controller for the Tello drone.
-
-    Attributes:
-        controller_connector: The connector used to interface with the keyboard (default: pygame).
-        max_intensity: The maximum intensity value for key press counters (default: 10).
-        key_mapping: A dictionary mapping keyboard keys to Tello action types.
-        key_press_counters: A dictionary storing the key press counters for each key.
-
-    Methods:
-        get_action: Returns the Tello action corresponding to the currently pressed key, if any.
-    """
-
     def __init__(self, pygame_connector: PyGameConnector, max_intensity=10):
-        """
-        Initializes a new instance of the KeyboardController class.
-
-        Args:
-            pygame_connector: The connector used to interface with pygame.
-            max_intensity: The maximum intensity value for key press counters (default: 10).
-        """
         self._max_intensity = max_intensity
         self._pygame_connector = pygame_connector
         self._key_mapping = {
@@ -66,40 +46,34 @@ class KeyboardController(Controller):
             K_t: TelloActionType.TAKEOFF,
             K_SPACE: TelloActionType.LAND,
         }
-        # Initialize key press counters
-        self.key_press_counters = {key: 0 for key in self._key_mapping.keys()}
+
+        self.action_queue = Queue()
+        self.process_thread = threading.Thread(target=self._process_events)
+        self.process_thread.daemon = True
+        self.process_thread.start()
+
         LOGGER.debug("Key Mappings:")
         for key, action in self._key_mapping.items():
-            print(f"{pygame_connector.get_key_name(key)}: {action}")
+            print(f"{pygame_connector.get_key_name(key)}: {action.name}")
+
+    def _process_events(self):
+        while True:
+            actions = []
+            for event in self._pygame_connector.get_events():
+                if event.type == pygame.KEYDOWN:
+                    key = event.key
+                    if key in self._key_mapping:
+                        action = self._key_mapping[key]
+                        intensity = 1.0  # Set intensity to 1.0 for key press events
+                        actions.append(TelloControlEvent(action, intensity))
+            for action in actions:
+                self.action_queue.put(action)
 
     def get_actions(self) -> List[TelloControlEvent]:
-        """
-        Checks if any of the defined keys are currently being pressed and returns the corresponding Tello action.
-
-        Returns:
-            A TelloActionEvent object representing the Tello action corresponding to the currently pressed key, if any.
-            Returns None if no action keys are pressed.
-        """
         LOGGER.debug(f"Getting actions from {self.__class__.__name__}")
-        self._pygame_connector.pump_events()  # Process internal pygame event handlers.
-        keys = (
-            self._pygame_connector.get_pressed_keys()
-        )  # Get the currently pressed keys.
-
-        actions: List[TelloControlEvent] = []
-        for key, action in self._key_mapping.items():
-            if keys[key]:  # If the key is pressed
-                # Increment key press counter up to the maximum intensity
-                if self.key_press_counters[key] < self._max_intensity:
-                    self.key_press_counters[key] += 1
-                intensity = (
-                    self.key_press_counters[key] / self._max_intensity
-                )  # Normalize intensity
-                actions.append(TelloControlEvent(action, intensity))
-            else:
-                # Reset counter if the key is not pressed
-                self.key_press_counters[key] = 0
-
+        actions = []
+        while not self.action_queue.empty():
+            actions.append(self.action_queue.get())
         return actions
 
     def dispose(self):
