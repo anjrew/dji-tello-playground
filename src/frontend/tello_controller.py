@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from enum import Enum
 from typing import List
+from models.tello_control_event import TelloControlEvent
+from enums.tello_action_type import TelloActionType
 from pygame_connector import PyGameConnector
 
 from pygame.locals import (
@@ -16,24 +17,9 @@ from pygame.locals import (
     K_l,
 )
 
+import logging
 
-class TelloActionType(Enum):
-    SET_FORWARD_VELOCITY = 1
-    SET_BACKWARD_VELOCITY = 2
-    SET_LEFT_VELOCITY = 3
-    SET_RIGHT_VELOCITY = 4
-    SET_UP_VELOCITY = 5
-    SET_DOWN_VELOCITY = 6
-    SET_YAW_CLOCKWISE_VELOCITY = 7
-    SET_YAW_COUNTER_CLOCKWISE_VELOCITY = 8
-    TAKEOFF = 9
-    LAND = 10
-
-
-class TelloControlEvent:
-    def __init__(self, action, intensity):
-        self.action = action
-        self.intensity = intensity
+LOGGER = logging.getLogger(__name__)
 
 
 class Controller(ABC):
@@ -65,9 +51,9 @@ class KeyboardController(Controller):
             pygame_connector: The connector used to interface with pygame.
             max_intensity: The maximum intensity value for key press counters (default: 10).
         """
-        self.max_intensity = max_intensity
-        self.pygame_connector = pygame_connector
-        self.key_mapping = {
+        self._max_intensity = max_intensity
+        self._pygame_connector = pygame_connector
+        self._key_mapping = {
             K_UP: TelloActionType.SET_FORWARD_VELOCITY,
             K_DOWN: TelloActionType.SET_BACKWARD_VELOCITY,
             K_LEFT: TelloActionType.SET_LEFT_VELOCITY,
@@ -80,7 +66,10 @@ class KeyboardController(Controller):
             K_l: TelloActionType.LAND,
         }
         # Initialize key press counters
-        self.key_press_counters = {key: 0 for key in self.key_mapping.keys()}
+        self.key_press_counters = {key: 0 for key in self._key_mapping.keys()}
+        LOGGER.debug("Key Mappings:")
+        for key, action in self._key_mapping.items():
+            print(f"{pygame_connector.get_key_name(key)}: {action}")
 
     def get_actions(self) -> List[TelloControlEvent]:
         """
@@ -90,19 +79,19 @@ class KeyboardController(Controller):
             A TelloActionEvent object representing the Tello action corresponding to the currently pressed key, if any.
             Returns None if no action keys are pressed.
         """
-        self.pygame_connector.pump_events()  # Process internal pygame event handlers.
+        self._pygame_connector.pump_events()  # Process internal pygame event handlers.
         keys = (
-            self.pygame_connector.get_pressed_keys()
+            self._pygame_connector.get_pressed_keys()
         )  # Get the currently pressed keys.
 
         actions: List[TelloControlEvent] = []
-        for key, action in self.key_mapping.items():
+        for key, action in self._key_mapping.items():
             if keys[key]:  # If the key is pressed
                 # Increment key press counter up to the maximum intensity
-                if self.key_press_counters[key] < self.max_intensity:
+                if self.key_press_counters[key] < self._max_intensity:
                     self.key_press_counters[key] += 1
                 intensity = (
-                    self.key_press_counters[key] / self.max_intensity
+                    self.key_press_counters[key] / self._max_intensity
                 )  # Normalize intensity
                 actions.append(TelloControlEvent(action, intensity))
             else:
@@ -112,4 +101,4 @@ class KeyboardController(Controller):
         return actions
 
     def dispose(self):
-        self.pygame_connector.dispose()
+        self._pygame_connector.dispose()

@@ -13,5 +13,8 @@ class PyGameConnector:
     def get_pressed_keys(self) -> ScancodeWrapper:
         return pygame.key.get_pressed()
 
+    def get_key_name(self, key_code: int) -> str:
+        return pygame.key.name(key_code)
+
     def dispose(self):
         pygame.quit()
