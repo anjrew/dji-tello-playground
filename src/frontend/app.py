@@ -20,6 +20,8 @@ def main():
     controller = KeyboardController(pygame_connector)
     tello = Tello()
     tello_service = TelloService(tello)
+    tello_service.connect()
+    tello_service.streamon()
     frontend = FrontEnd(controller, tello_service)
     frontend.run()
 

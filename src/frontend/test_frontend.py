@@ -2,8 +2,13 @@ import logging
 import numpy as np
 import pytest
 from unittest.mock import MagicMock
+from pygame_connector import PyGameConnector
 from tello_service import TelloService
-from tello_controller import Controller, TelloActionType, TelloControlEvent
+from tello_controller import (
+    Controller,
+    TelloActionType,
+    TelloControlEvent,
+)
 from tello_frontend import FrontEnd
 
 
@@ -21,6 +26,11 @@ def mock_tello_service() -> MagicMock:
 def mock_controller():
     mock_controller = MagicMock(spec=Controller)
     return mock_controller
+
+
+@pytest.fixture
+def mock_pygame_wrapper():
+    return MagicMock(spec=PyGameConnector)
 
 
 def test_frontend_run(mock_tello_service, mock_controller):
@@ -45,7 +55,7 @@ def test_frontend_run(mock_tello_service, mock_controller):
 
 def test_frontend_takeoff(mock_tello_service: MagicMock):
     frontend = FrontEnd(controller=MagicMock(), tello_service=mock_tello_service)
-    frontend.takeoff()
+    frontend.take_off()
     logging.info(f"takeoff call count: {mock_tello_service.takeoff.call_count}")
 
     mock_tello_service.takeoff.assert_called_once()

@@ -44,7 +44,7 @@ class KeyboardController(Controller):
         get_action: Returns the Tello action corresponding to the currently pressed key, if any.
     """
 
-    def __init__(self, pygame_connector: PyGameConnector, max_intensity=10):
+    def __init__(self, pygame_connector: PyGameConnector, max_intensity=1):
         """
         Initializes a new instance of the KeyboardController class.
 
@@ -68,9 +68,9 @@ class KeyboardController(Controller):
         }
         # Initialize key press counters
         self.key_press_counters = {key: 0 for key in self._key_mapping.keys()}
-        LOGGER.debug("Key Mappings:")
+        LOGGER.info("Key Mappings:")
         for key, action in self._key_mapping.items():
-            print(f"{pygame_connector.get_key_name(key).upper()}: {action.name}")
+            LOGGER.info(f"{pygame_connector.get_key_name(key).upper()}: {action.name}")
 
     def get_actions(self) -> List[TelloControlEvent]:
         """
@@ -82,26 +82,24 @@ class KeyboardController(Controller):
         """
         LOGGER.debug(f"Getting actions from {self.__class__.__name__}")
         self._pygame_connector.pump_events()  # Process internal pygame event handlers.
-        keys = (
-            self._pygame_connector.get_pressed_keys()
-        )  # Get the currently pressed keys.
+        keys = self._pygame_connector.get_pressed_keys()
 
-        actions: List[TelloControlEvent] = [
-            TelloControlEvent(
-                action, self.key_press_counters[key] / self._max_intensity
-            )
-            for key, action in self._key_mapping.items()
-            if keys[key] and self.key_press_counters[key] < self._max_intensity
-        ]
-
-        for key in self._key_mapping:
-            if keys[key]:
+        actions: List[TelloControlEvent] = []
+        for key in keys:
+            if key in self._key_mapping.keys():
+                action = self._key_mapping[key]
                 # Increment key press counter up to the maximum intensity
                 if self.key_press_counters[key] < self._max_intensity:
                     self.key_press_counters[key] += 1
-            else:
-                # Reset counter if the key is not pressed
-                self.key_press_counters[key] = 0
+                else:
+                    # Reset counter if the key is not pressed
+                    self.key_press_counters[key] = 0
+                count = self.key_press_counters[key]
+                intensity = count / self._max_intensity
+                LOGGER.debug(
+                    f"{key} pressed {count} times meaning intensity {intensity}"
+                )
+                actions.append(TelloControlEvent(action, intensity))
 
         return actions
 

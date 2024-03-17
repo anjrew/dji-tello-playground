@@ -55,7 +55,7 @@ class TelloService:
         LOGGER.debug("Getting frame read")
         return self.tello.get_frame_read()
 
-    def takeoff(self):
+    def take_off(self):
         LOGGER.info("Taking off...")
         self.tello.takeoff()
 

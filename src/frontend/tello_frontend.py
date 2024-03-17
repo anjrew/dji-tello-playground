@@ -32,10 +32,7 @@ class FrontEnd:
         self.tello_service = tello_service
         self.state = FrontEndState()
 
-    def run(self, max_iterations=math.inf, cadence_secs: float = 1):
-        self.tello_service.connect()
-        self.tello_service.streamon()
-
+    def run(self, max_iterations=math.inf, cadence_secs: float = 0):
         frame_read = self.tello_service.get_frame_read()
         iteration = 0
         while iteration < max_iterations:
@@ -58,8 +55,8 @@ class FrontEnd:
 
         self.tello_service.end()
 
-    def takeoff(self):
-        self.tello_service.takeoff()
+    def take_off(self):
+        self.tello_service.take_off()
         self.state.send_rc_control = True
 
     def land(self):
@@ -70,7 +67,7 @@ class FrontEnd:
         for event in events:
             LOGGER.debug(f"Got event {vars(event)}")
             if event.action == TelloActionType.TAKEOFF:
-                self.takeoff()
+                self.take_off()
                 break
             if not self.state.send_rc_control:
                 break
@@ -101,6 +98,7 @@ class FrontEnd:
 
     def _update_control_state(self, event: TelloControlEvent) -> None:
         control_state = self.state.control
+        LOGGER.debug(f"Updating tello state with event {vars(event)}")
         if event.action == TelloActionType.SET_LEFT_VELOCITY:
             control_state.left_right_velocity = -event.intensity
         elif event.action == TelloActionType.SET_RIGHT_VELOCITY:
