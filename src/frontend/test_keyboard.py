@@ -102,6 +102,7 @@ def test_correct_values_come_through(
     action = actions[0]
     assert isinstance(action, TelloControlEvent)
     assert action.action == TelloActionType.TAKEOFF
+    assert action.intensity == 1.0
 
     # Check action 2
     actions = controller.get_actions()
@@ -109,6 +110,7 @@ def test_correct_values_come_through(
     action = actions[0]
     assert isinstance(action, TelloControlEvent)
     assert action.action == TelloActionType.SET_FORWARD_VELOCITY
+    assert action.intensity == 1.0
 
     # Check action 3
     actions = controller.get_actions()
@@ -116,6 +118,7 @@ def test_correct_values_come_through(
     action = actions[0]
     assert isinstance(action, TelloControlEvent)
     assert action.action == TelloActionType.SET_FORWARD_VELOCITY
+    assert action.intensity == 2.0
 
     # Check action 4
     actions = controller.get_actions()
@@ -123,5 +126,6 @@ def test_correct_values_come_through(
     action = actions[0]
     assert isinstance(action, TelloControlEvent)
     assert action.action == TelloActionType.SET_FORWARD_VELOCITY
+    assert action.intensity == 3.0
 
     assert action is not None

@@ -63,6 +63,13 @@ class FrontEnd:
         self.tello_service.land()
         self.state.send_rc_control = False
 
+    def emergency_land(self):
+        self.tello_service.emergency_stop()
+        self.state.send_rc_control = False
+
+    def set_speed_cm_s(self, cm_s: int):
+        self.tello_service.set_speed_cm_s(cm_s)
+
     def _update_tello(self, events: List[TelloControlEvent]):
         for event in events:
             LOGGER.debug(f"Got event {vars(event)}")
@@ -73,6 +80,12 @@ class FrontEnd:
                 break
             if event.action == TelloActionType.LAND:
                 self.land()
+                break
+            if event.action == TelloActionType.EMERGENCY_LAND:
+                self.emergency_land()
+                break
+            if event.action == TelloActionType.SET_SPEED_CM_S:
+                self.set_speed_cm_s(int(event.intensity))
                 break
 
             self._update_control_state(event)

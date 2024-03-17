@@ -77,6 +77,16 @@ class TelloService:
             left_right_velocity, for_back_velocity, up_down_velocity, yaw_velocity
         )
 
+    def emergency_stop(self) -> None:
+        self.tello.emergency()
+
+    def set_speed_cm_s(self, cm_s: int) -> None:
+        """Set speed to x cm/s.
+        Arguments:
+            x: 10-100
+        """
+        self.tello.set_speed(cm_s)
+
     def end(self):
         LOGGER.debug("Ending Tello service")
         self.tello.end()

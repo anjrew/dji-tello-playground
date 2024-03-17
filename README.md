@@ -89,7 +89,7 @@ For more detailed instructions, troubleshooting, or to contribute to this projec
 ## Other Resources
 
 - [Gamepad Control](https://github.com/cozmobotics/Tello-Swarm-Gamepad)
-- [Alternate SDK](https://github.com/ErnGusMik/python-tello/blob/main/tello_sdk/tello.py)
+- [Alternate SDK](https://github.com/ErnGusMik/python-tello/tree/main)
 - [SDK](https://dl-cdn.ryzerobotics.com/downloads/tello/20180910/Tello%20SDK%20Documentation%20EN_1.3.pdf)
 - [Api Repository](https://github.com/honglan3/dji-sdk-DJITelloPy?tab=readme-ov-file)
 - [Api Documentation](https://github.com/honglan3/dji-sdk-DJITelloPy?tab=readme-ov-file)

@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List
 
+from pygame import K_KP_PLUS, K_k
+
 from models.tello_control_event import TelloControlEvent
 from enums.tello_action_type import TelloActionType
 from pygame_connector import PyGameConnector
@@ -44,7 +46,7 @@ class KeyboardController(Controller):
         get_action: Returns the Tello action corresponding to the currently pressed key, if any.
     """
 
-    def __init__(self, pygame_connector: PyGameConnector, max_intensity=1):
+    def __init__(self, pygame_connector: PyGameConnector, max_intensity=100):
         """
         Initializes a new instance of the KeyboardController class.
 
@@ -65,6 +67,8 @@ class KeyboardController(Controller):
             K_d: TelloActionType.SET_YAW_CLOCKWISE_VELOCITY,
             K_t: TelloActionType.TAKEOFF,
             K_SPACE: TelloActionType.LAND,
+            K_k: TelloActionType.EMERGENCY_LAND,
+            K_KP_PLUS: TelloActionType.EMERGENCY_LAND,
         }
         # Initialize key press counters
         self.key_press_counters = {key: 0 for key in self._key_mapping.keys()}
@@ -95,7 +99,7 @@ class KeyboardController(Controller):
                     # Reset counter if the key is not pressed
                     self.key_press_counters[key] = 0
                 count = self.key_press_counters[key]
-                intensity = count / self._max_intensity
+                intensity = min(count, self._max_intensity)
                 LOGGER.debug(
                     f"{key} pressed {count} times meaning intensity {intensity}"
                 )

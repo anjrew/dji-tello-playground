@@ -12,3 +12,5 @@ class TelloActionType(Enum):
     SET_YAW_COUNTER_CLOCKWISE_VELOCITY = 8
     TAKEOFF = 9
     LAND = 10
+    EMERGENCY_LAND = 11
+    SET_SPEED_CM_S = 12
