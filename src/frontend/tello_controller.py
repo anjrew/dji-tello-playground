@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum
+from typing import List
 from pygame_connector import PyGameConnector
 
 from pygame.locals import (
@@ -38,7 +39,7 @@ class TelloControlEvent:
 class Controller(ABC):
 
     @abstractmethod
-    def get_action(self) -> TelloControlEvent:
+    def get_actions(self) -> List[TelloControlEvent]:
         pass
 
 
@@ -81,7 +82,7 @@ class KeyboardController(Controller):
         # Initialize key press counters
         self.key_press_counters = {key: 0 for key in self.key_mapping.keys()}
 
-    def get_action(self):
+    def get_actions(self) -> List[TelloControlEvent]:
         """
         Checks if any of the defined keys are currently being pressed and returns the corresponding Tello action.
 
@@ -93,6 +94,8 @@ class KeyboardController(Controller):
         keys = (
             self.pygame_connector.get_pressed_keys()
         )  # Get the currently pressed keys.
+
+        actions: List[TelloControlEvent] = []
         for key, action in self.key_mapping.items():
             if keys[key]:  # If the key is pressed
                 # Increment key press counter up to the maximum intensity
@@ -101,12 +104,12 @@ class KeyboardController(Controller):
                 intensity = (
                     self.key_press_counters[key] / self.max_intensity
                 )  # Normalize intensity
-                return TelloControlEvent(action, intensity)
+                actions.append(TelloControlEvent(action, intensity))
             else:
                 # Reset counter if the key is not pressed
                 self.key_press_counters[key] = 0
 
-        return None  # If no action keys are pressed, return None.
+        return actions
 
     def dispose(self):
         self.pygame_connector.dispose()

@@ -13,6 +13,8 @@
         "--ignore=E402",
     ],
     "cSpell.words": [
+        "frontalface",
+        "haarcascade",
         "Tello"
     ]
 }

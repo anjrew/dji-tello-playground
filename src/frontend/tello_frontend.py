@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 import math
+from typing import List
 import cv2
 from tello_service import TelloService
 from tello_controller import Controller, TelloActionType, TelloControlEvent
@@ -33,9 +34,8 @@ class FrontEnd:
         frame_read = self.tello_service.get_frame_read()
         iteration = 0
         while iteration < max_iterations:
-            action = self.controller.get_action()
-            if action:
-                self._update_tello(action)
+            actions = self.controller.get_actions()
+            self._update_tello(actions)
 
             if frame_read.stopped:
                 frame_read.stop()
@@ -60,19 +60,20 @@ class FrontEnd:
         self.tello_service.land()
         self.state.send_rc_control = False
 
-    def _update_tello(self, event: TelloControlEvent):
-        if event.action == TelloActionType.TAKEOFF:
-            self.takeoff()
-            return
-        if not self.state.send_rc_control:
-            return
-        if event.action == TelloActionType.LAND:
-            self.land()
-            return
+    def _update_tello(self, events: List[TelloControlEvent]):
+        for event in events:
+            if event.action == TelloActionType.TAKEOFF:
+                self.takeoff()
+                break
+            if not self.state.send_rc_control:
+                break
+            if event.action == TelloActionType.LAND:
+                self.land()
+                break
 
-        self._update_control_state(event)
+            self._update_control_state(event)
+
         control_state = self.state.control
-
         self.tello_service.send_rc_control(
             round(control_state.left_right_velocity * self.state.speed_factor),
             round(control_state.forward_backward_velocity * self.state.speed_factor),

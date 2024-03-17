@@ -1,9 +1,6 @@
 from djitellopy import Tello
 import cv2
 
-
-IMAGE_COMPRESSION = 4
-
 # Create a Tello instance
 tello = Tello()
 
