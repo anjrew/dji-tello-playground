@@ -1,8 +1,17 @@
+import argparse
 from tello_service import TelloService
 from djitellopy import Tello
 from pygame_connector import PyGameConnector
 from tello_controller import KeyboardController
 from tello_frontend import FrontEnd
+
+import logging
+
+args = argparse.ArgumentParser()
+
+logging.basicConfig(level=logging.DEBUG)
+
+LOGGER = logging.getLogger(__name__)
 
 
 def main():

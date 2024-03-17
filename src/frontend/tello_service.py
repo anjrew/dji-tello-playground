@@ -2,6 +2,8 @@ import logging
 import time
 from djitellopy import Tello, BackgroundFrameRead
 
+LOGGER = logging.getLogger(__name__)
+
 
 class TelloService:
     """
@@ -31,16 +33,21 @@ class TelloService:
             logging.info(f"Connecting in {second}")
             time.sleep(1)
 
+        LOGGER.debug("Connected to Tello")
+
         # In case streaming is on. This happens when we quit this program with out the escape key.
         self.tello.streamoff()
 
         self.tello.streamon()
+        LOGGER.debug("Video stream on")
 
     def set_speed(self, speed):
         self.tello.set_speed(speed)
+        LOGGER.debug(f"Speed set to {speed}")
 
     def streamoff(self):
         self.tello.streamoff()
+        LOGGER.debug("Video stream off")
 
     def streamon(self):
         logging.info("Restarting video stream")
@@ -51,14 +58,15 @@ class TelloService:
         logging.info("Video stream on")
 
     def get_frame_read(self) -> BackgroundFrameRead:
+        LOGGER.debug("Getting frame read")
         return self.tello.get_frame_read()
 
     def takeoff(self):
-        logging.info("Taking off...")
+        LOGGER.info("Taking off...")
         self.tello.takeoff()
 
     def land(self):
-        logging.info("Landing...")
+        LOGGER.info("Landing...")
         self.tello.land()
 
     def send_rc_control(
@@ -68,9 +76,13 @@ class TelloService:
         up_down_velocity: int,
         yaw_velocity: int,
     ):
+        LOGGER.debug(
+            f"Sending RC control: {left_right_velocity}, {for_back_velocity}, {up_down_velocity}, {yaw_velocity}"
+        )
         self.tello.send_rc_control(
             left_right_velocity, for_back_velocity, up_down_velocity, yaw_velocity
         )
 
     def end(self):
+        LOGGER.debug("Ending Tello service")
         self.tello.end()

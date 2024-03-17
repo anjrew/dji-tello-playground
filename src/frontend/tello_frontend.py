@@ -1,9 +1,14 @@
 from dataclasses import dataclass, field
 import math
+import time
 from typing import List
 import cv2
 from tello_service import TelloService
 from tello_controller import Controller, TelloActionType, TelloControlEvent
+import logging
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -27,13 +32,14 @@ class FrontEnd:
         self.tello_service = tello_service
         self.state = FrontEndState()
 
-    def run(self, max_iterations=math.inf):
+    def run(self, max_iterations=math.inf, cadence_secs: float = 1):
         self.tello_service.connect()
         self.tello_service.streamon()
 
         frame_read = self.tello_service.get_frame_read()
         iteration = 0
         while iteration < max_iterations:
+            time.sleep(cadence_secs)
             actions = self.controller.get_actions()
             self._update_tello(actions)
 
@@ -62,6 +68,7 @@ class FrontEnd:
 
     def _update_tello(self, events: List[TelloControlEvent]):
         for event in events:
+            LOGGER.debug(f"Got event {vars(event)}")
             if event.action == TelloActionType.TAKEOFF:
                 self.takeoff()
                 break
