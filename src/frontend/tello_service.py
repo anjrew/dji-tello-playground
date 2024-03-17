@@ -30,16 +30,10 @@ class TelloService:
     def connect(self):
         self.tello.connect()
         for second in range(3, 0, -1):
-            logging.info(f"Connecting in {second}")
+            LOGGER.info(f"Connecting in {second}")
             time.sleep(1)
 
         LOGGER.debug("Connected to Tello")
-
-        # In case streaming is on. This happens when we quit this program with out the escape key.
-        self.tello.streamoff()
-
-        self.tello.streamon()
-        LOGGER.debug("Video stream on")
 
     def set_speed(self, speed):
         self.tello.set_speed(speed)
@@ -50,12 +44,12 @@ class TelloService:
         LOGGER.debug("Video stream off")
 
     def streamon(self):
-        logging.info("Restarting video stream")
+        LOGGER.info("Restarting video stream")
         time.sleep(1)
         self.streamoff()
         time.sleep(1)
         self.tello.streamon()
-        logging.info("Video stream on")
+        LOGGER.info("Video stream on")
 
     def get_frame_read(self) -> BackgroundFrameRead:
         LOGGER.debug("Getting frame read")

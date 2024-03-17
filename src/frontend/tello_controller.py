@@ -70,7 +70,7 @@ class KeyboardController(Controller):
         self.key_press_counters = {key: 0 for key in self._key_mapping.keys()}
         LOGGER.debug("Key Mappings:")
         for key, action in self._key_mapping.items():
-            print(f"{pygame_connector.get_key_name(key)}: {action}")
+            print(f"{pygame_connector.get_key_name(key).upper()}: {action.name}")
 
     def get_actions(self) -> List[TelloControlEvent]:
         """
@@ -86,16 +86,19 @@ class KeyboardController(Controller):
             self._pygame_connector.get_pressed_keys()
         )  # Get the currently pressed keys.
 
-        actions: List[TelloControlEvent] = []
-        for key, action in self._key_mapping.items():
-            if keys[key]:  # If the key is pressed
+        actions: List[TelloControlEvent] = [
+            TelloControlEvent(
+                action, self.key_press_counters[key] / self._max_intensity
+            )
+            for key, action in self._key_mapping.items()
+            if keys[key] and self.key_press_counters[key] < self._max_intensity
+        ]
+
+        for key in self._key_mapping:
+            if keys[key]:
                 # Increment key press counter up to the maximum intensity
                 if self.key_press_counters[key] < self._max_intensity:
                     self.key_press_counters[key] += 1
-                intensity = (
-                    self.key_press_counters[key] / self._max_intensity
-                )  # Normalize intensity
-                actions.append(TelloControlEvent(action, intensity))
             else:
                 # Reset counter if the key is not pressed
                 self.key_press_counters[key] = 0
