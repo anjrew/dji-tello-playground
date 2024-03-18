@@ -4,7 +4,7 @@ import pytest
 from unittest.mock import MagicMock
 from services.pygame_connector import PyGameConnector
 from services.tello_connector import TelloConnector
-from services.tello_controller import (
+from services.keyboard_controller import (
     Controller,
     TelloActionType,
     TelloControlEvent,

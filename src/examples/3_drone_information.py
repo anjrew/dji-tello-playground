@@ -40,3 +40,17 @@ print("Acceleration Y:", tello.get_acceleration_y(), "cm/s²")
 print("Acceleration Z:", tello.get_acceleration_z(), "cm/s²")
 
 print("Serial number:", tello.query_serial_number())
+
+print("Pitch", tello.get_pitch(), "degrees")
+
+print("Roll", tello.get_roll(), "degrees")
+
+print("Yaw", tello.get_yaw(), "degrees")
+
+
+print("Lowest_temperature", tello.get_lowest_temperature(), "(°C)")
+
+
+print("Highest_temperature", tello.get_highest_temperature(), "(°C)")
+
+print("Temperature", tello.get_temperature(), "(°C)")

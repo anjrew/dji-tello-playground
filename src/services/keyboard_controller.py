@@ -1,10 +1,8 @@
-from abc import ABC, abstractmethod
 from typing import List
-
-from pygame import K_KP_PLUS, K_k
 
 from models.tello_control_event import TelloControlEvent
 from enums.tello_action_type import TelloActionType
+from interfaces.controller import Controller
 from services.pygame_connector import PyGameConnector
 
 from pygame.locals import (
@@ -18,18 +16,13 @@ from pygame.locals import (
     K_d,
     K_t,
     K_SPACE,
+    K_KP_PLUS,
+    K_k,
 )
 
 import logging
 
 LOGGER = logging.getLogger(__name__)
-
-
-class Controller(ABC):
-
-    @abstractmethod
-    def get_actions(self) -> List[TelloControlEvent]:
-        pass
 
 
 class KeyboardController(Controller):

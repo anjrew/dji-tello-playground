@@ -23,3 +23,13 @@ class PyGameConnector:
 
     def dispose(self):
         pygame.quit()
+
+    def init_joystick(self):
+        pygame.joystick.init()
+        return pygame.joystick.get_count()
+
+    def get_joystick_count(self):
+        return pygame.joystick.get_count()
+
+    def create_joystick(self, which_js: int):
+        return pygame.joystick.Joystick(which_js)

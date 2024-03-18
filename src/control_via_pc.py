@@ -2,7 +2,7 @@ import argparse
 from services.tello_connector import TelloConnector
 from djitellopy import Tello
 from services.pygame_connector import PyGameConnector
-from services.tello_controller import KeyboardController
+from services.keyboard_controller import KeyboardController
 from services.tello_frontend import FrontEnd
 
 import logging

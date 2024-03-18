@@ -4,7 +4,7 @@ import time
 from typing import List
 import cv2
 from .tello_connector import TelloConnector
-from .tello_controller import Controller, TelloActionType, TelloControlEvent
+from .keyboard_controller import Controller, TelloActionType, TelloControlEvent
 import logging
 
 
