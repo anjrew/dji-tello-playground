@@ -47,6 +47,7 @@ print("Roll", tello.get_roll(), "degrees")
 
 print("Yaw", tello.get_yaw(), "degrees")
 
+print("IMU data", tello.query_attitude())
 
 print("Lowest_temperature", tello.get_lowest_temperature(), "(°C)")
 
@@ -54,3 +55,5 @@ print("Lowest_temperature", tello.get_lowest_temperature(), "(°C)")
 print("Highest_temperature", tello.get_highest_temperature(), "(°C)")
 
 print("Temperature", tello.get_temperature(), "(°C)")
+
+print("State", tello.get_current_state())

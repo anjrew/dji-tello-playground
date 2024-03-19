@@ -1,6 +1,9 @@
+# Not verified working on normal Tello!
+
 from djitellopy import Tello
 
 import time
+
 
 # Create a Tello instance
 tello = Tello()

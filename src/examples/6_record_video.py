@@ -1,28 +1,31 @@
 import time
 from threading import Thread
+from typing import cast
 from djitellopy import Tello
 import cv2
 
 tello = Tello()
-
 tello.connect()
-
 keepRecording = True
 tello.streamon()
+
+
 frame_read = tello.get_frame_read()
 
 
 def video_recorder():
-
-    height, width, _ = frame_read.frame.shape
-    video = cv2.VideoWriter(
-        "video.avi", cv2.VideoWriter_fourcc(*"XVID"), 30, (width, height)
-    )
-
+    frame = cast(cv2.typing.MatLike, frame_read.frame)
+    height, width, _ = frame.shape
+    file_path = "video.mp4"
+    fourcc = 0x00000021  # cv2.VideoWriter_fourcc(*"mp4v")
+    fps = 30
+    video = cv2.VideoWriter(file_path, fourcc, fps, (width, height), True)
     while keepRecording:
-        video.write(frame_read.frame)
+        print("Writing frame")
+        video.write(frame)
         time.sleep(1 / 30)
 
+    print("Finished recording")
     video.release()
 
 

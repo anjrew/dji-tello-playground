@@ -8,6 +8,9 @@
     "editor.autoIndent": "full",
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true,
+    "python.analysis.extraPaths": [
+        "./venv/lib/python3.11/site-packages"
+    ],
     "flake8.args": [
         "--max-line-length=120",
         "--ignore=E402",

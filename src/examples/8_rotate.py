@@ -2,7 +2,7 @@ from djitellopy import Tello
 
 import time
 
-ROTATION_DEGREES = 90
+ROTATION_DEGREES = 180
 
 # Create a Tello instance
 tello = Tello()

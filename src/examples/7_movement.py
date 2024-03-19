@@ -2,7 +2,7 @@ from djitellopy import Tello
 
 import time
 
-MOVEMENT_DISTANCE_CM = 20
+MOVEMENT_DISTANCE_CM = 50
 
 # Create a Tello instance
 tello = Tello()
@@ -20,42 +20,38 @@ print("Take off")
 tello.takeoff()
 
 
-def pause():
-    print("Hovering for...")
+def pause(next_action: str):
+    print(f"Hovering before {next_action}")
     for i in range(3, 0, -1):
         print(i)
         time.sleep(1)
 
 
+pause("forward")
 print(f"Moving forward {MOVEMENT_DISTANCE_CM}cm")
 tello.move_forward(MOVEMENT_DISTANCE_CM)
 
-pause()
-
+pause("backwards")
 print(f"Moving backwards {MOVEMENT_DISTANCE_CM}cm")
 tello.move_back(MOVEMENT_DISTANCE_CM)
 
-pause()
-
+pause("left")
 print(f"Moving left {MOVEMENT_DISTANCE_CM}cm")
 tello.move_left(MOVEMENT_DISTANCE_CM)
 
-pause()
-
+pause("right")
 print(f"Moving right {MOVEMENT_DISTANCE_CM}cm")
 tello.move_right(MOVEMENT_DISTANCE_CM)
 
-pause()
-
+pause("up")
 print(f"Moving up {MOVEMENT_DISTANCE_CM}cm")
 tello.move_up(MOVEMENT_DISTANCE_CM)
 
-pause()
-
+pause("down")
 print(f"Moving down {MOVEMENT_DISTANCE_CM}cm")
 tello.move_down(MOVEMENT_DISTANCE_CM)
-pause()
 
+pause("landing")
 print("Landing")
 # Land
 tello.land()

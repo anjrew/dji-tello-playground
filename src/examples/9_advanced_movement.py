@@ -1,3 +1,5 @@
+# Not verified working on normal Tello!
+
 from djitellopy import Tello
 
 import time
