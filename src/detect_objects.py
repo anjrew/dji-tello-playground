@@ -2,7 +2,12 @@ import os
 import cv2
 import numpy as np
 from djitellopy import Tello
+from object_detection.yolo_v8_detector import YoloObjectDetector
 
+# Create the object detector
+detector = YoloObjectDetector()
+
+# Start up tello
 tello = Tello()
 tello.connect()
 
