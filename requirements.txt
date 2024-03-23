@@ -10,3 +10,4 @@ opencv-python==4.9.0.80
 pygame==2.5.2
 python-dotenv
 pytest==8.1.1
+ultralytics==8.1.31
