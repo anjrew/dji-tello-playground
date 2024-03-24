@@ -2,7 +2,7 @@ import argparse
 from services.tello_connector import TelloConnector
 from djitellopy import Tello
 from services.pygame_connector import PyGameConnector
-from services.xbox_xs_series_controller import Controller
+from services.xbox_xs_series_controller import XboxXsSeriesPyGameJoystick
 from services.tello_frontend import FrontEnd
 
 import logging
@@ -17,7 +17,7 @@ LOGGER = logging.getLogger(__name__)
 def main():
 
     pygame_connector = PyGameConnector()
-    controller = XboxController(pygame_connector)
+    controller = XboxXsSeriesPyGameJoystick(pygame_connector)
     tello = Tello()
     tello_service = TelloConnector(tello)
     tello_service.connect()

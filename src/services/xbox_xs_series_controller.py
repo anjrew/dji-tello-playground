@@ -1,16 +1,39 @@
 import time
-
-from pygame_connector import PyGameConnector
-
-
 import logging
 
+from pygame_connector import PyGameConnector
 from tello_controller import TelloControlState, TelloController
 
 LOGGER = logging.getLogger(__name__)
 
+from enum import Enum
+
+
+class XboxButton(Enum):
+    A = 0
+    B = 1
+    X = 2
+    Y = 3
+    LB = 4
+    RB = 5
+    VIEW = 6
+    MENU = 7
+    NA = 8
+    LEFT_STICK = 9
+    RIGHT_STICK = 10
+    DPAD_LEFT = 11
+    DPAD_RIGHT = 12
+    DPAD_DOWN = 13
+    DPAD_UP = 14
+
 
 class XboxXsSeriesPyGameJoystick(TelloController):
+    """
+    The controller works on two main principles
+        - That the axes act like a stream of data and are constant
+        - The buttons are event based as in only when a button is pressed is the button acknowledged.
+            The release of the button is not acknowledged directly but can be inferred
+    """
 
     # The axis id with its name
     AXIS_NAMES = {
@@ -123,12 +146,21 @@ class XboxXsSeriesPyGameJoystick(TelloController):
                     LOGGER.info("button: %s state: %d" % (button, state))
                 iBtn += 1
 
-        LOGGER.debug(
-            f"Axis {list(zip(self.AXIS_NAMES.values() ,self.axis_ids, self.axis_states))}"
-        )
-        LOGGER.debug(
-            f"Buttons {list(zip(self.BUTTON_NAMES.values(), self.button_ids, self.button_states))}"
-        )
+        pressed_button_ids = [
+            index
+            for index, is_pressed_state in enumerate(self.button_states)
+            if is_pressed_state
+        ]
+        if LOGGER.level == logging.DEBUG:
+            LOGGER.debug(
+                f"Axis {list(zip(self.AXIS_NAMES.values() ,self.axis_ids, self.axis_states))}"
+            )
+            LOGGER.debug(
+                f"Buttons {list(zip(self.BUTTON_NAMES.values(), self.button_ids, self.button_states))}"
+            )
+            LOGGER.debug(
+                f"Pressed Buttons { [ v for k,v in self.BUTTON_NAMES.items() if k in pressed_button_ids ]}"
+            )
         return TelloControlState(
             left_right_velocity=left_right_velocity,
             forward_backward_velocity=forward_backward_velocity,
