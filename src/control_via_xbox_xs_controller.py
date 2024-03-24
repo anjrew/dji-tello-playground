@@ -30,8 +30,12 @@ def main():
 
     while True:
         time.sleep(CADENCE_SECS)
-        control_state = controller.get_state()
-        dispatcher.send_commands(control_state)
+        try:
+
+            control_state = controller.get_state()
+            dispatcher.send_commands(control_state)
+        except Exception as e:
+            LOGGER.error(e, "Error Issuing command")
 
 
 if __name__ == "__main__":
