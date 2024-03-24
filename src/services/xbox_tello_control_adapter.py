@@ -1,6 +1,18 @@
 from typing import List
-from xbox_xs_series_controller import XboxButtonKeys, XboxXsSeriesPyGameJoystick
-from tello_controller import TelloActionType, TelloControlState, TelloController
+
+try:
+    from xbox_xs_series_controller import XboxButtonKeys, XboxXsSeriesPyGameJoystick
+    from tello_controller import TelloActionType, TelloControlState, TelloController
+except ModuleNotFoundError:
+    from services.xbox_xs_series_controller import (
+        XboxButtonKeys,
+        XboxXsSeriesPyGameJoystick,
+    )
+    from services.tello_controller import (
+        TelloActionType,
+        TelloControlState,
+        TelloController,
+    )
 
 
 class XboxTelloControlAdapter(TelloController):
@@ -34,9 +46,9 @@ class XboxTelloControlAdapter(TelloController):
         t = self.t
 
         return TelloControlState(
-            forward_backward_velocity=t(controller_state.axes.left_stick.vertical),
-            left_right_velocity=t(controller_state.axes.left_stick.horizontal),
-            up_down_velocity=t(controller_state.axes.right_stick.vertical),
-            yaw_velocity=t(controller_state.axes.right_stick.horizontal),
+            forward_velocity=t(controller_state.axes.left_stick.vertical),
+            right_velocity=t(controller_state.axes.left_stick.horizontal),
+            up_velocity=t(controller_state.axes.right_stick.vertical),
+            yaw_right_velocity=t(controller_state.axes.right_stick.horizontal),
             events=events,
         )

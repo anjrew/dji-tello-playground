@@ -28,21 +28,19 @@ class TelloControlState:
     MAX_SPEED = 100
 
     # Direction variables
-    left_right_velocity: int
-    forward_backward_velocity: int
-    up_down_velocity: int
-    yaw_velocity: int
+    right_velocity: int
+    forward_velocity: int
+    up_velocity: int
+    yaw_right_velocity: int
 
     # A list of events coming from the controller
     events: List[TelloActionType]
 
     def __post_init__(self):
-        self.validate_direction("left_right_velocity", self.left_right_velocity)
-        self.validate_direction(
-            "forward_backward_velocity", self.forward_backward_velocity
-        )
-        self.validate_direction("up_down_velocity", self.up_down_velocity)
-        self.validate_direction("yaw_velocity", self.yaw_velocity)
+        self.validate_direction("right_velocity", self.right_velocity)
+        self.validate_direction("forward_velocity", self.forward_velocity)
+        self.validate_direction("up_velocity", self.up_velocity)
+        self.validate_direction("yaw_right_velocity", self.yaw_right_velocity)
 
     def validate_direction(self, attribute_name: str, value: int):
         if not isinstance(value, int):

@@ -4,7 +4,10 @@ import time
 import logging
 from typing import List
 
-from pygame_connector import PyGameConnector
+try:
+    from pygame_connector import PyGameConnector
+except ModuleNotFoundError:
+    from services.pygame_connector import PyGameConnector
 
 LOGGER = logging.getLogger(__name__)
 

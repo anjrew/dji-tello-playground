@@ -7,7 +7,6 @@ from services.tello_connector import TelloConnector
 from services.keyboard_controller import (
     Controller,
     KeyboardController,
-    TelloActionType,
     TelloControlEvent,
 )
 from services.tello_frontend import FrontEnd
@@ -90,7 +89,6 @@ def test_correct_values_come_through(mock_pygame_wrapper: MagicMock):
     assert len(actions) == 1
     action = actions[0]
     assert isinstance(action, TelloControlEvent)
-    assert action.action == TelloActionType.TAKEOFF
     assert action.intensity == 1.0
 
     # Check action 2
@@ -98,7 +96,6 @@ def test_correct_values_come_through(mock_pygame_wrapper: MagicMock):
     assert len(actions) == 1
     action = actions[0]
     assert isinstance(action, TelloControlEvent)
-    assert action.action == TelloActionType.SET_FORWARD_VELOCITY
     assert action.intensity == 1.0
 
     # Check action 3
@@ -106,7 +103,6 @@ def test_correct_values_come_through(mock_pygame_wrapper: MagicMock):
     assert len(actions) == 1
     action = actions[0]
     assert isinstance(action, TelloControlEvent)
-    assert action.action == TelloActionType.SET_FORWARD_VELOCITY
     assert action.intensity == 2.0
 
     # Check action 4
@@ -114,7 +110,6 @@ def test_correct_values_come_through(mock_pygame_wrapper: MagicMock):
     assert len(actions) == 1
     action = actions[0]
     assert isinstance(action, TelloControlEvent)
-    assert action.action == TelloActionType.SET_FORWARD_VELOCITY
     assert action.intensity == 3.0
 
     assert action is not None

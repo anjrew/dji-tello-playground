@@ -35,10 +35,6 @@ class TelloConnector:
 
         LOGGER.debug("Connected to Tello")
 
-    def set_speed(self, speed):
-        self.tello.set_speed(speed)
-        LOGGER.debug(f"Speed set to {speed}")
-
     def streamoff(self):
         self.tello.streamoff()
         LOGGER.debug("Video stream off")

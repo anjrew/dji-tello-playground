@@ -1,7 +1,6 @@
 from typing import List
 
 from models.tello_control_event import TelloControlEvent
-from enums.tello_action_type import TelloActionType
 from interfaces.controller import Controller
 from services.pygame_connector import PyGameConnector
 

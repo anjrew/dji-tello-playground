@@ -17,12 +17,10 @@ if __name__ == "__main__":
 
         # Print the TelloControlState object
         print("TelloControlState:")
-        print(
-            f"Forward/Backward Velocity: {tello_control_state.forward_backward_velocity}"
-        )
-        print(f"Left/Right Velocity: {tello_control_state.left_right_velocity}")
-        print(f"Up/Down Velocity: {tello_control_state.up_down_velocity}")
-        print(f"Yaw Velocity: {tello_control_state.yaw_velocity}")
+        print(f"Forward Velocity: {tello_control_state.forward_velocity}")
+        print(f"Right Velocity: {tello_control_state.right_velocity}")
+        print(f"Up Velocity: {tello_control_state.up_velocity}")
+        print(f"Yaw Right Velocity: {tello_control_state.yaw_right_velocity}")
         print(f"Events: {tello_control_state.events}")
 
         time.sleep(0.1)
