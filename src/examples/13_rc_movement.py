@@ -4,7 +4,8 @@ from djitellopy import Tello
 import time
 
 SPEED_SETTING_CM_S = 30
-MOVEMENT_MAGNITUDE = 10
+MOVEMENT_MAGNITUDE = 30
+TIME_PER_ACTION_SECS = 3
 
 # Create a Tello instance
 tello = Tello()
@@ -40,7 +41,7 @@ do_action_for_time(
     lambda: tello.send_rc_control(
         left_right_velocity, forward_backward_velocity, up_down_velocity, yaw_velocity
     ),
-    1,
+    TIME_PER_ACTION_SECS,
 )
 
 # Move forward
@@ -53,7 +54,7 @@ do_action_for_time(
     lambda: tello.send_rc_control(
         left_right_velocity, forward_backward_velocity, up_down_velocity, yaw_velocity
     ),
-    1,
+    TIME_PER_ACTION_SECS,
 )
 
 # Move Backwards
@@ -66,7 +67,7 @@ do_action_for_time(
     lambda: tello.send_rc_control(
         left_right_velocity, forward_backward_velocity, up_down_velocity, yaw_velocity
     ),
-    1,
+    TIME_PER_ACTION_SECS,
 )
 
 
@@ -80,7 +81,7 @@ do_action_for_time(
     lambda: tello.send_rc_control(
         left_right_velocity, forward_backward_velocity, up_down_velocity, yaw_velocity
     ),
-    1,
+    TIME_PER_ACTION_SECS,
 )
 
 # Move Right
@@ -93,7 +94,7 @@ do_action_for_time(
     lambda: tello.send_rc_control(
         left_right_velocity, forward_backward_velocity, up_down_velocity, yaw_velocity
     ),
-    1,
+    TIME_PER_ACTION_SECS,
 )
 
 # Move Up
@@ -106,7 +107,7 @@ do_action_for_time(
     lambda: tello.send_rc_control(
         left_right_velocity, forward_backward_velocity, up_down_velocity, yaw_velocity
     ),
-    1,
+    TIME_PER_ACTION_SECS,
 )
 
 # Move down
@@ -119,7 +120,7 @@ do_action_for_time(
     lambda: tello.send_rc_control(
         left_right_velocity, forward_backward_velocity, up_down_velocity, yaw_velocity
     ),
-    1,
+    TIME_PER_ACTION_SECS,
 )
 
 # Turn Left
@@ -132,7 +133,7 @@ do_action_for_time(
     lambda: tello.send_rc_control(
         left_right_velocity, forward_backward_velocity, up_down_velocity, yaw_velocity
     ),
-    1,
+    TIME_PER_ACTION_SECS,
 )
 
 # Turn Right
@@ -145,7 +146,7 @@ do_action_for_time(
     lambda: tello.send_rc_control(
         left_right_velocity, forward_backward_velocity, up_down_velocity, yaw_velocity
     ),
-    1,
+    TIME_PER_ACTION_SECS,
 )
 
 print("Landing")
