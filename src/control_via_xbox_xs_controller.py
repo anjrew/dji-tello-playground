@@ -11,7 +11,7 @@ import logging
 
 args = argparse.ArgumentParser()
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 LOGGER = logging.getLogger(__name__)
 
