@@ -4,8 +4,7 @@ FROM mcr.microsoft.com/vscode/devcontainers/python:3.11
 RUN apt-get update && apt-get install -y \
     git \
     iputils-ping \
-    net-tools \
-    libgl1-mesa-glx
+    net-tools
 
 # Copy requirements.txt to the container
 COPY requirements.txt requirements.txt
