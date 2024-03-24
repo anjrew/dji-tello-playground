@@ -21,15 +21,15 @@ class PyGameConnector:
     def get_key_name(self, key_code: int) -> str:
         return pygame.key.name(key_code)
 
-    def dispose(self):
+    def dispose(self) -> None:
         pygame.quit()
 
     def init_joystick(self):
         pygame.joystick.init()
         return pygame.joystick.get_count()
 
-    def get_joystick_count(self):
+    def get_joystick_count(self) -> int:
         return pygame.joystick.get_count()
 
-    def create_joystick(self, which_js: int):
+    def create_joystick(self, which_js: int) ->pygame.joystick.Joystick:
         return pygame.joystick.Joystick(which_js)
