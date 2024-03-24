@@ -35,8 +35,6 @@ class StickState:
 class ControllerAxesState:
     left_stick: StickState
     right_stick: StickState
-    left_analog_trigger: float
-    right_analog_trigger: float
 
 
 class ButtonKeys(Enum):
@@ -63,10 +61,10 @@ class ControllerButtonPressedState:
     RB: bool
     Back: bool
     Start: bool
-    Mode: bool
-    Vibration: bool
     LEFT_STICK: bool
     RIGHT_STICK: bool
+    Left_trigger: bool
+    RightTrigger: bool
 
     def get_pressed_buttons(self) -> List[str]:
         return [field.name for field in fields(self) if getattr(self, field.name)]
@@ -110,12 +108,7 @@ class LogitechF710ControllerState:
         self.validate_direction(
             "axes.right_stick.vertical", self.axes.right_stick.vertical
         )
-        self.validate_direction(
-            "axes.left_analog_trigger", self.axes.left_analog_trigger
-        )
-        self.validate_direction(
-            "axes.right_analog_trigger", self.axes.right_analog_trigger
-        )
+
 
     def validate_direction(self, attribute_name: str, value: float):
         if not isinstance(value, float):
@@ -188,10 +181,7 @@ class LogitechF710Joystick:
             right_stick_horizontal = 0.0
         if abs(right_stick_vertical) < self.dead_zone:
             right_stick_vertical = 0.0
-        if abs(left_analog_trigger) < self.dead_zone:
-            left_analog_trigger = 0.0
-        if abs(right_analog_trigger) < self.dead_zone:
-            right_analog_trigger = 0.0
+
 
         axes = ControllerAxesState(
             left_stick=StickState(
@@ -200,8 +190,6 @@ class LogitechF710Joystick:
             right_stick=StickState(
                 horizontal=right_stick_horizontal, vertical=right_stick_vertical
             ),
-            left_analog_trigger=left_analog_trigger,
-            right_analog_trigger=right_analog_trigger,
         )
 
         buttons = ControllerButtonPressedState(
@@ -215,8 +203,8 @@ class LogitechF710Joystick:
             RIGHT_STICK=self.joystick.get_button(ButtonKeys.RIGHT_STICK.value),
             Start=self.joystick.get_button(ButtonKeys.Start.value),
             Back=self.joystick.get_button(ButtonKeys.Back.value),
-            Mode=self.joystick.get_button(ButtonKeys.Mode.value),
-            Vibration=self.joystick.get_button(ButtonKeys.Vibration.value),
+            Left_trigger=self.joystick.get_button(ButtonKeys.LeftTrigger.value),
+            RightTrigger=self.joystick.get_button(ButtonKeys.RightTrigger.value),
         )
 
         # Retrieve the state of the D-pad buttons
