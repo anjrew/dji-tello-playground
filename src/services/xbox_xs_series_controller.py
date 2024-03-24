@@ -1,15 +1,16 @@
+from abc import ABC, abstractmethod
+from dataclasses import asdict, dataclass
 import time
 import logging
 
 from pygame_connector import PyGameConnector
-from tello_controller import TelloControlState, TelloController
 
 LOGGER = logging.getLogger(__name__)
 
 from enum import Enum
 
 
-class XboxButton(Enum):
+class XboxButtonKeys(Enum):
     A = 0
     B = 1
     X = 2
@@ -21,48 +22,118 @@ class XboxButton(Enum):
     NA = 8
     LEFT_STICK = 9
     RIGHT_STICK = 10
-    DPAD_LEFT = 11
-    DPAD_RIGHT = 12
-    DPAD_DOWN = 13
-    DPAD_UP = 14
 
 
-class XboxXsSeriesPyGameJoystick(TelloController):
+class XboxDPadKeys(Enum):
+    HORIZONTAL = 0
+    VERTICAL = 1
+
+
+class XboxAxisKeys(Enum):
+    LEFT_STICK_HORIZONTAL = 0
+    LEFT_STICK_VERTICAL = 1
+    LEFT_ANALOG_TRIGGER = 2
+    RIGHT_STICK_HORIZONTAL = 3
+    RIGHT_STICK_VERTICAL = 4
+    RIGHT_ANALOG_TRIGGER = 5
+
+
+@dataclass
+class StickState:
+    horizontal: float
+    vertical: float
+
+
+@dataclass
+class XboxControllerAxesState:
+    left_stick: StickState
+    right_stick: StickState
+    left_analog_trigger: float
+    right_analog_trigger: float
+
+
+@dataclass
+class XboxControllerButtonPressedState:
+    A: bool
+    B: bool
+    X: bool
+    Y: bool
+    LB: bool
+    RB: bool
+    VIEW: bool
+    MENU: bool
+    NA: bool
+    LEFT_STICK: bool
+    RIGHT_STICK: bool
+
+
+@dataclass
+class XboxControllerDPadState:
+    horizontal_right: float
+    vertical_up: float
+
+
+@dataclass
+class XboxControllerState:
+    """
+    This state represents the desired state for the controller.
+    """
+
+    # The axis control range
+    AXIS_MIN_VAL = -1
+    AXIS_MAX_VAL = 1
+
+    axes: XboxControllerAxesState
+    buttons: XboxControllerButtonPressedState
+    d_pad: XboxControllerDPadState
+
+    def __post_init__(self):
+        self.validate_direction(
+            "axes.left_stick.horizontal", self.axes.left_stick.horizontal
+        )
+        self.validate_direction(
+            "axes.left_stick.vertical", self.axes.left_stick.vertical
+        )
+        self.validate_direction(
+            "axes.right_stick.horizontal", self.axes.right_stick.horizontal
+        )
+        self.validate_direction(
+            "axes.right_stick.vertical", self.axes.right_stick.vertical
+        )
+        self.validate_direction(
+            "axes.left_analog_trigger", self.axes.left_analog_trigger
+        )
+        self.validate_direction(
+            "axes.right_analog_trigger", self.axes.right_analog_trigger
+        )
+
+    def validate_direction(self, attribute_name: str, value: float):
+        if not isinstance(value, float):
+            raise ValueError(
+                f"{attribute_name} value needs to be an float. Got {type(value)}"
+            )
+        if not (self.AXIS_MIN_VAL <= value <= self.AXIS_MAX_VAL):
+            raise ValueError(
+                f"Value {value} for attribute '{attribute_name}' is not in the range [{self.AXIS_MIN_VAL}, {self.AXIS_MAX_VAL}]"
+            )
+
+    def to_dict(self):
+        return asdict(self)
+
+
+class XboxController(ABC):
+    @abstractmethod
+    def get_state(self) -> XboxControllerState:
+        """Gets the current controller state of the drone"""
+
+
+class XboxXsSeriesPyGameJoystick(XboxController):
     """
     The controller works on two main principles
         - That the axes act like a stream of data and are constant
         - The buttons are event based as in only when a button is pressed is the button acknowledged.
             The release of the button is not acknowledged directly but can be inferred
     """
-
-    # The axis id with its name
-    AXIS_NAMES = {
-        0: "left_stick_horizontal",
-        1: "left_stick_vertical",
-        2: "left_analog_trigger",
-        3: "right_stick_horizontal",
-        4: "right_stick_vertical",
-        5: "right_analog_trigger",
-    }
-
-    # The button id with its name
-    BUTTON_NAMES = {
-        0: "A",
-        1: "B",
-        2: "X",
-        3: "Y",
-        4: "LB",
-        5: "RB",
-        6: "View",
-        7: "Menu",
-        8: "N/A",
-        9: "Left Stick",
-        10: "Right Stick",
-        11: "D-Pad Left",
-        12: "D-Pad Right",
-        13: "D-Pad Down",
-        14: "D-Pad Up",
-    }
 
     def __init__(self, pygame_connector: PyGameConnector, joystick_id: int = 0):
         self.pygame_connector = pygame_connector
@@ -78,97 +149,98 @@ class XboxXsSeriesPyGameJoystick(TelloController):
             )
 
         self.axis_states = [0.0 for i in range(self.joystick.get_numaxes())]
-        self.button_states = [
-            False
-            for i in range(
-                self.joystick.get_numbuttons() + self.joystick.get_numhats() * 4
-            )
-        ]
+        self.button_states = [False for i in range(self.joystick.get_numbuttons())]
         self.axis_ids = {}
         self.button_ids = {}
         self.dead_zone = 0.07
         for i in range(self.joystick.get_numaxes()):
-            self.axis_ids[i] = i
-        for i in range(
-            self.joystick.get_numbuttons() + self.joystick.get_numhats() * 4
-        ):
-            self.button_ids[i] = i
+            self.axis_ids[i] = XboxAxisKeys(i)
+        for i in range(self.joystick.get_numbuttons()):
+            self.button_ids[i] = XboxButtonKeys(i)
 
-    def get_state(self) -> TelloControlState:
+    def get_state(self) -> XboxControllerState:
         self.pygame_connector.get_events()
 
-        left_right_velocity = 0
-        forward_backward_velocity = 0
-        up_down_velocity = 0
-        yaw_velocity = 0
+        left_stick_horizontal = self.joystick.get_axis(
+            XboxAxisKeys.LEFT_STICK_HORIZONTAL.value
+        )
+        left_stick_vertical = self.joystick.get_axis(
+            XboxAxisKeys.LEFT_STICK_VERTICAL.value
+        )
+        right_stick_horizontal = self.joystick.get_axis(
+            XboxAxisKeys.RIGHT_STICK_HORIZONTAL.value
+        )
+        right_stick_vertical = self.joystick.get_axis(
+            XboxAxisKeys.RIGHT_STICK_VERTICAL.value
+        )
+        left_analog_trigger = self.joystick.get_axis(
+            XboxAxisKeys.LEFT_ANALOG_TRIGGER.value
+        )
+        right_analog_trigger = self.joystick.get_axis(
+            XboxAxisKeys.RIGHT_ANALOG_TRIGGER.value
+        )
 
-        for i in range(self.joystick.get_numaxes()):
-            val = self.joystick.get_axis(i)
-            if abs(val) < self.dead_zone:
-                val = 0.0
-            if self.axis_states[i] != val and i in self.axis_ids:
-                axis = self.axis_ids[i]
-                self.axis_states[i] = val
-                logging.debug("axis: %s val: %f" % (axis, val))
+        if abs(left_stick_horizontal) < self.dead_zone:
+            left_stick_horizontal = 0.0
+        if abs(left_stick_vertical) < self.dead_zone:
+            left_stick_vertical = 0.0
+        if abs(right_stick_horizontal) < self.dead_zone:
+            right_stick_horizontal = 0.0
+        if abs(right_stick_vertical) < self.dead_zone:
+            right_stick_vertical = 0.0
+        if abs(left_analog_trigger) < self.dead_zone:
+            left_analog_trigger = 0.0
+        if abs(right_analog_trigger) < self.dead_zone:
+            right_analog_trigger = 0.0
 
-                if axis == "left_right":
-                    left_right_velocity = int(val * 100)
-                elif axis == "forward_backward":
-                    forward_backward_velocity = int(val * 100)
-                elif axis == "up_down":
-                    up_down_velocity = int(val * 100)
-                elif axis == "yaw":
-                    yaw_velocity = int(val * 100)
+        axes = XboxControllerAxesState(
+            left_stick=StickState(
+                horizontal=left_stick_horizontal, vertical=left_stick_vertical
+            ),
+            right_stick=StickState(
+                horizontal=right_stick_horizontal, vertical=right_stick_vertical
+            ),
+            left_analog_trigger=left_analog_trigger,
+            right_analog_trigger=right_analog_trigger,
+        )
 
-        for i in range(self.joystick.get_numbuttons()):
-            state = bool(self.joystick.get_button(i))
-            if self.button_states[i] != state:
-                if i not in self.button_ids:
-                    LOGGER.info(f"button: {i}")
-                    continue
-                button = self.button_ids[i]
-                self.button_states[i] = state
-                LOGGER.info("button: %s state: %d" % (button, state))
+        buttons = XboxControllerButtonPressedState(
+            A=self.joystick.get_button(XboxButtonKeys.A.value),
+            B=self.joystick.get_button(XboxButtonKeys.B.value),
+            X=self.joystick.get_button(XboxButtonKeys.X.value),
+            Y=self.joystick.get_button(XboxButtonKeys.Y.value),
+            LB=self.joystick.get_button(XboxButtonKeys.LB.value),
+            RB=self.joystick.get_button(XboxButtonKeys.RB.value),
+            VIEW=self.joystick.get_button(XboxButtonKeys.VIEW.value),
+            MENU=self.joystick.get_button(XboxButtonKeys.MENU.value),
+            NA=self.joystick.get_button(XboxButtonKeys.NA.value),
+            LEFT_STICK=self.joystick.get_button(XboxButtonKeys.LEFT_STICK.value),
+            RIGHT_STICK=self.joystick.get_button(XboxButtonKeys.RIGHT_STICK.value),
+        )
 
-        for i in range(self.joystick.get_numhats()):
-            hat = self.joystick.get_hat(i)
-            horz, vert = hat
-            iBtn = self.joystick.get_numbuttons() + (i * 4)
-            states = (horz == -1, horz == 1, vert == -1, vert == 1)
-            for state in states:
-                state = bool(state)
-                if self.button_states[iBtn] != state:
-                    if iBtn not in self.button_ids:
-                        LOGGER.info(f"button: {iBtn}")
-                        continue
-                    button = self.button_ids[iBtn]
-                    self.button_states[iBtn] = state
-                    LOGGER.info("button: %s state: %d" % (button, state))
-                iBtn += 1
+        # Retrieve the state of the D-pad buttons using get_hat()
+        hat = self.joystick.get_hat(0)
+        d_pad_state = XboxControllerDPadState(
+            hat[XboxDPadKeys.HORIZONTAL.value], hat[XboxDPadKeys.VERTICAL.value]
+        )
 
         pressed_button_ids = [
-            index
-            for index, is_pressed_state in enumerate(self.button_states)
-            if is_pressed_state
+            button.value
+            for button in XboxButtonKeys
+            if self.joystick.get_button(button.value)
         ]
-        if LOGGER.level == logging.DEBUG:
+        pressed_buttons = [
+            XboxButtonKeys(button_id) for button_id in pressed_button_ids
+        ]
+
+        if LOGGER.getEffectiveLevel() == logging.DEBUG:
+            LOGGER.debug(f"Axes: {axes}")
+            LOGGER.debug(f"Buttons: {buttons}")
             LOGGER.debug(
-                f"Axis {list(zip(self.AXIS_NAMES.values() ,self.axis_ids, self.axis_states))}"
+                f"Pressed Buttons: {[button.name for button in pressed_buttons]}"
             )
-            LOGGER.debug(
-                f"Buttons {list(zip(self.BUTTON_NAMES.values(), self.button_ids, self.button_states))}"
-            )
-            LOGGER.debug(
-                f"Pressed Buttons { [ v for k,v in self.BUTTON_NAMES.items() if k in pressed_button_ids ]}"
-            )
-        return TelloControlState(
-            left_right_velocity=left_right_velocity,
-            forward_backward_velocity=forward_backward_velocity,
-            up_down_velocity=up_down_velocity,
-            yaw_velocity=yaw_velocity,
-            speed=50,
-            take_off=False,
-        )
+
+        return XboxControllerState(axes=axes, buttons=buttons, d_pad=d_pad_state)
 
 
 if __name__ == "__main__":
@@ -177,5 +249,10 @@ if __name__ == "__main__":
     LOGGER.setLevel("DEBUG")
     while True:
         state = pygame_joystick.get_state()
-        print("Current state", state)
+        print("Current state")
+        dict_state = state.to_dict()
+
+        for k, v in dict_state.items():
+            print(k, v)
+
         time.sleep(0.1)
