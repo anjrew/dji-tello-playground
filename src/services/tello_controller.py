@@ -1,5 +1,15 @@
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass
+from enum import Enum
+from typing import List
+
+
+class TelloActionType(Enum):
+    TAKEOFF = 0
+    LAND = 1
+    EMERGENCY_LAND = 2
+    INCREASE_SPEED_CM_S = 3
+    DECREASE_SPEED_CM_S = 4
 
 
 @dataclass
@@ -23,10 +33,8 @@ class TelloControlState:
     up_down_velocity: int
     yaw_velocity: int
 
-    # Other action variables
-    speed: int
-    take_off: bool
-    """If false then the device should be trying to land"""
+    # A list of events coming from the controller
+    events: List[TelloActionType]
 
     def __post_init__(self):
         self.validate_direction("left_right_velocity", self.left_right_velocity)
@@ -35,12 +43,6 @@ class TelloControlState:
         )
         self.validate_direction("up_down_velocity", self.up_down_velocity)
         self.validate_direction("yaw_velocity", self.yaw_velocity)
-        if not (self.MIN_SPEED <= self.speed <= self.MAX_SPEED):
-            raise ValueError(
-                f"Speed {self.speed} is not within the range of {self.MIN_SPEED} and {self.MAX_SPEED}"
-            )
-        if not isinstance(self.take_off, bool):
-            raise ValueError("Take off should be a boolean")
 
     def validate_direction(self, attribute_name: str, value: int):
         if not isinstance(value, int):
