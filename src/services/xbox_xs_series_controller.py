@@ -1,27 +1,14 @@
 from abc import ABC, abstractmethod
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, fields
 import time
 import logging
+from typing import List
 
 from pygame_connector import PyGameConnector
 
 LOGGER = logging.getLogger(__name__)
 
 from enum import Enum
-
-
-class XboxButtonKeys(Enum):
-    A = 0
-    B = 1
-    X = 2
-    Y = 3
-    LB = 4
-    RB = 5
-    VIEW = 6
-    MENU = 7
-    NA = 8
-    LEFT_STICK = 9
-    RIGHT_STICK = 10
 
 
 class XboxDPadKeys(Enum):
@@ -52,6 +39,20 @@ class XboxControllerAxesState:
     right_analog_trigger: float
 
 
+class XboxButtonKeys(Enum):
+    A = 0
+    B = 1
+    X = 2
+    Y = 3
+    LB = 4
+    RB = 5
+    VIEW = 6
+    MENU = 7
+    NA = 8
+    LEFT_STICK = 9
+    RIGHT_STICK = 10
+
+
 @dataclass
 class XboxControllerButtonPressedState:
     A: bool
@@ -66,11 +67,19 @@ class XboxControllerButtonPressedState:
     LEFT_STICK: bool
     RIGHT_STICK: bool
 
+    def get_pressed_buttons(self) -> List[str]:
+        return [field.name for field in fields(self) if getattr(self, field.name)]
+
 
 @dataclass
 class XboxControllerDPadState:
-    horizontal_right: float
-    vertical_up: float
+    horizontal_right: int
+    """If positive, the D-pad is pressed right, if negative, the D-pad is pressed left. If 0, the D-pad is not pressed"""
+    vertical_up: int
+    """If positive, the D-pad is pressed up, if negative, the D-pad is pressed down. If 0, the D-pad is not pressed"""
+
+    def get_active(self) -> List[str]:
+        return [field.name for field in fields(self) if getattr(self, field.name) != 0]
 
 
 @dataclass
@@ -218,10 +227,11 @@ class XboxXsSeriesPyGameJoystick(XboxController):
             RIGHT_STICK=self.joystick.get_button(XboxButtonKeys.RIGHT_STICK.value),
         )
 
-        # Retrieve the state of the D-pad buttons using get_hat()
+        # Retrieve the state of the D-pad buttons
         hat = self.joystick.get_hat(0)
         d_pad_state = XboxControllerDPadState(
-            hat[XboxDPadKeys.HORIZONTAL.value], hat[XboxDPadKeys.VERTICAL.value]
+            int(hat[XboxDPadKeys.HORIZONTAL.value]),
+            int(hat[XboxDPadKeys.VERTICAL.value]),
         )
 
         pressed_button_ids = [
