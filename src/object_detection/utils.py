@@ -90,14 +90,14 @@ def draw_object_box(
     font_scale = (box_width / frame_width) + 1
     font_size = 0.4
     scaled_font = font_size * (font_scale**3)
-    whiteish_rgb_color = (10, 10, 10)
+    white_rgb_color = (10, 10, 10)
     cv2.putText(
         frame,
         box_text,
         (left + 6, bottom_of_text_box - 6),
         font,
         scaled_font,
-        whiteish_rgb_color,
+        white_rgb_color,
         1,
     )
 
