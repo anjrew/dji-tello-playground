@@ -139,7 +139,7 @@ class XboxController(ABC):
         """Gets the current controller state of the drone"""
 
 
-class XboxXsSeriesPyGameJoystick(XboxController):
+class Xbox360PyGameJoystick(XboxController):
     """
     The controller works on two main principles
         - That the axes act like a stream of data and are constant
@@ -155,7 +155,7 @@ class XboxXsSeriesPyGameJoystick(XboxController):
 
         name = self.joystick.get_name()
         LOGGER.info(f"detected joystick device: {name}")
-        if "xbox" not in name.lower():
+        if "360" not in name or "xbox" not in name.lower():
             raise ValueError(
                 f"Xbox controller not detected. Controller detected was {name}"
             )
@@ -257,9 +257,12 @@ class XboxXsSeriesPyGameJoystick(XboxController):
 
 
 if __name__ == "__main__":
+    log_level = logging.DEBUG
+    logging.basicConfig(level=log_level)
+    LOGGER.setLevel(log_level)
     pygame_connector = PyGameConnector()
-    pygame_joystick = XboxXsSeriesPyGameJoystick(pygame_connector)
-    LOGGER.setLevel("DEBUG")
+    pygame_joystick = Xbox360PyGameJoystick(pygame_connector)
+
     while True:
         state = pygame_joystick.get_state()
         print("Current state")

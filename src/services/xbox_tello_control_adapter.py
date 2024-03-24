@@ -1,12 +1,12 @@
 from typing import List
 
 try:
-    from xbox_xs_series_controller import XboxButtonKeys, XboxXsSeriesPyGameJoystick
+    from services.xbox_360_controller import XboxButtonKeys, Xbox360PyGameJoystick
     from tello_controller import TelloActionType, TelloControlState, TelloController
 except ModuleNotFoundError:
-    from services.xbox_xs_series_controller import (
+    from services.xbox_360_controller import (
         XboxButtonKeys,
-        XboxXsSeriesPyGameJoystick,
+        Xbox360PyGameJoystick,
     )
     from services.tello_controller import (
         TelloActionType,
@@ -17,7 +17,7 @@ except ModuleNotFoundError:
 
 class XboxTelloControlAdapter(TelloController):
 
-    def __init__(self, controller: XboxXsSeriesPyGameJoystick):
+    def __init__(self, controller: Xbox360PyGameJoystick):
         self.xbox_controller = controller
 
     def t(self, controller_axis_value: float) -> int:

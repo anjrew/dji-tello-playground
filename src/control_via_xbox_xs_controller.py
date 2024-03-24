@@ -5,7 +5,7 @@ from services.tello_connector import TelloConnector
 from djitellopy import Tello
 from services.pygame_connector import PyGameConnector
 from services.xbox_tello_control_adapter import XboxTelloControlAdapter
-from services.xbox_xs_series_controller import XboxXsSeriesPyGameJoystick
+from services.xbox_360_controller import Xbox360PyGameJoystick
 
 import logging
 
@@ -21,7 +21,7 @@ CADENCE_SECS = 0.1
 def main():
 
     pygame_connector = PyGameConnector()
-    joystick = XboxXsSeriesPyGameJoystick(pygame_connector)
+    joystick = Xbox360PyGameJoystick(pygame_connector)
     controller = XboxTelloControlAdapter(joystick)
     tello = Tello()
     tello_service = TelloConnector(tello)
