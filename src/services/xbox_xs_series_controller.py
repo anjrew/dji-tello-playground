@@ -12,6 +12,35 @@ LOGGER = logging.getLogger(__name__)
 
 class XboxXsSeriesPyGameJoystick(TelloController):
 
+    # The axis id with its name
+    AXIS_NAMES = {
+        0: "left_stick_horizontal",
+        1: "left_stick_vertical",
+        2: "left_analog_trigger",
+        3: "right_stick_horizontal",
+        4: "right_stick_vertical",
+        5: "right_analog_trigger",
+    }
+
+    # The button id with its name
+    BUTTON_NAMES = {
+        0: "A",
+        1: "B",
+        2: "X",
+        3: "Y",
+        4: "LB",
+        5: "RB",
+        6: "View",
+        7: "Menu",
+        8: "N/A",
+        9: "Left Stick",
+        10: "Right Stick",
+        11: "D-Pad Left",
+        12: "D-Pad Right",
+        13: "D-Pad Down",
+        14: "D-Pad Up",
+    }
+
     def __init__(self, pygame_connector: PyGameConnector, joystick_id: int = 0):
         self.pygame_connector = pygame_connector
         pygame_connector.init_joystick()
@@ -27,20 +56,20 @@ class XboxXsSeriesPyGameJoystick(TelloController):
 
         self.axis_states = [0.0 for i in range(self.joystick.get_numaxes())]
         self.button_states = [
-            0
+            False
             for i in range(
                 self.joystick.get_numbuttons() + self.joystick.get_numhats() * 4
             )
         ]
-        self.axis_names = {}
-        self.button_names = {}
+        self.axis_ids = {}
+        self.button_ids = {}
         self.dead_zone = 0.07
         for i in range(self.joystick.get_numaxes()):
-            self.axis_names[i] = i
+            self.axis_ids[i] = i
         for i in range(
             self.joystick.get_numbuttons() + self.joystick.get_numhats() * 4
         ):
-            self.button_names[i] = i
+            self.button_ids[i] = i
 
     def get_state(self) -> TelloControlState:
         self.pygame_connector.get_events()
@@ -54,8 +83,8 @@ class XboxXsSeriesPyGameJoystick(TelloController):
             val = self.joystick.get_axis(i)
             if abs(val) < self.dead_zone:
                 val = 0.0
-            if self.axis_states[i] != val and i in self.axis_names:
-                axis = self.axis_names[i]
+            if self.axis_states[i] != val and i in self.axis_ids:
+                axis = self.axis_ids[i]
                 self.axis_states[i] = val
                 logging.debug("axis: %s val: %f" % (axis, val))
 
@@ -69,12 +98,12 @@ class XboxXsSeriesPyGameJoystick(TelloController):
                     yaw_velocity = int(val * 100)
 
         for i in range(self.joystick.get_numbuttons()):
-            state = self.joystick.get_button(i)
+            state = bool(self.joystick.get_button(i))
             if self.button_states[i] != state:
-                if i not in self.button_names:
+                if i not in self.button_ids:
                     LOGGER.info(f"button: {i}")
                     continue
-                button = self.button_names[i]
+                button = self.button_ids[i]
                 self.button_states[i] = state
                 LOGGER.info("button: %s state: %d" % (button, state))
 
@@ -84,19 +113,22 @@ class XboxXsSeriesPyGameJoystick(TelloController):
             iBtn = self.joystick.get_numbuttons() + (i * 4)
             states = (horz == -1, horz == 1, vert == -1, vert == 1)
             for state in states:
-                state = int(state)
+                state = bool(state)
                 if self.button_states[iBtn] != state:
-                    if iBtn not in self.button_names:
+                    if iBtn not in self.button_ids:
                         LOGGER.info(f"button: {iBtn}")
                         continue
-                    button = self.button_names[iBtn]
+                    button = self.button_ids[iBtn]
                     self.button_states[iBtn] = state
                     LOGGER.info("button: %s state: %d" % (button, state))
                 iBtn += 1
-        LOGGER.debug(self.axis_names)
-        LOGGER.debug(self.axis_states)
-        LOGGER.debug(self.button_names)
-        LOGGER.debug(self.button_states)
+
+        LOGGER.debug(
+            f"Axis {list(zip(self.AXIS_NAMES.values() ,self.axis_ids, self.axis_states))}"
+        )
+        LOGGER.debug(
+            f"Buttons {list(zip(self.BUTTON_NAMES.values(), self.button_ids, self.button_states))}"
+        )
         return TelloControlState(
             left_right_velocity=left_right_velocity,
             forward_backward_velocity=forward_backward_velocity,
@@ -105,9 +137,6 @@ class XboxXsSeriesPyGameJoystick(TelloController):
             speed=50,
             take_off=False,
         )
-
-    def set_deadzone(self, val):
-        self.dead_zone = val
 
 
 if __name__ == "__main__":
