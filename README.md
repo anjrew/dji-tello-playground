@@ -35,6 +35,10 @@ python src/<script_name>.py
 
 Replace <script_name> with the script you wish to run.
 
+## Troubleshooting
+
+- See the drone status indicator states [here](./docs/drone_status_indicator_states.md)
+
 ## Debugging with Visual Studio Code
 
 To enhance your coding and debugging experience, we recommend using Visual Studio Code (VS Code). 
