@@ -1,3 +1,13 @@
+"""
+This script is used as a Sanity check abd performs face tracking using a camera feed.
+It identifies faces in each frame, calculates the distance between the center of the frame
+and each face, and selects the closest face.
+It then draws a box around the closest face and displays the frame with the box.
+The script continues to track faces until the user presses 'q' to quit.
+
+A Camera must be connected to the system to run this script properly.
+"""
+
 from image_drawing_service import ImageDrawingService
 from image_compression_service import ImageCompressionService
 from recognition_face_identifier import RecognitionFaceIdentifier
@@ -10,6 +20,7 @@ from utils.positioning_utils import (
     get_frame_center_xy,
     get_vector_xyz,
 )
+
 
 args = argparse.ArgumentParser()
 

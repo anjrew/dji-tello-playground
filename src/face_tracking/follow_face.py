@@ -1,3 +1,5 @@
+"This Module is used to track a face in the frame and follow it with the drone."
+
 import os
 import sys
 import time

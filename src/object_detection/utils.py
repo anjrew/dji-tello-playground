@@ -1,10 +1,13 @@
+"""
+This module contains utility functions for object detection.
+"""
+
 from typing import Tuple
 import numpy as np
 import cv2
 
+
 # Functions to draw bounding boxes and segmentation masks on images.
-
-
 def draw_object_mask(
     frame: np.ndarray, target_highlight_color: Tuple[int, int, int], mask: np.ndarray
 ) -> np.ndarray:

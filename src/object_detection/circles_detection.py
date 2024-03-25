@@ -5,9 +5,20 @@ from numpy.typing import NDArray
 
 
 class CircleDetector:
+    """
+    A class that detects circles in an image using the Hough transform.
+    """
 
     def detect_circles(self, img: cv2.typing.MatLike):
+        """
+        Detects circles in the given image and displays the result.
 
+        Args:
+            img: The input image in BGR format.
+
+        Returns:
+            None
+        """
         # Convert to grayscale
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
