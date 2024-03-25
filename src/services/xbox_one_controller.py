@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, fields
 import time
 import logging
@@ -21,8 +22,10 @@ class DPadKeys(Enum):
 class AxisKeys(Enum):
     LEFT_STICK_HORIZONTAL = 0
     LEFT_STICK_VERTICAL = 1
-    RIGHT_STICK_HORIZONTAL = 2
-    RIGHT_STICK_VERTICAL = 3
+    LEFT_ANALOG_TRIGGER = 2
+    RIGHT_STICK_HORIZONTAL = 3
+    RIGHT_STICK_VERTICAL = 4
+    RIGHT_ANALOG_TRIGGER = 5
 
 
 @dataclass
@@ -35,21 +38,22 @@ class StickState:
 class ControllerAxesState:
     left_stick: StickState
     right_stick: StickState
+    left_analog_trigger: float
+    right_analog_trigger: float
 
 
 class ButtonKeys(Enum):
-    A = 1
-    B = 2
-    X = 0
+    A = 0
+    B = 1
+    X = 2
     Y = 3
     LB = 4
     RB = 5
-    Back = 8
-    Start = 9
-    LeftTrigger = 6
-    RightTrigger = 7
-    LEFT_STICK = 10
-    RIGHT_STICK = 11
+    VIEW = 6
+    MENU = 7
+    NA = 8
+    LEFT_STICK = 9
+    RIGHT_STICK = 10
 
 
 @dataclass
@@ -60,12 +64,11 @@ class ControllerButtonPressedState:
     Y: bool
     LB: bool
     RB: bool
-    Back: bool
-    Start: bool
+    VIEW: bool
+    MENU: bool
+    NA: bool
     LEFT_STICK: bool
     RIGHT_STICK: bool
-    Left_trigger: bool
-    RightTrigger: bool
 
     def get_pressed_buttons(self) -> List[str]:
         return [field.name for field in fields(self) if getattr(self, field.name)]
@@ -83,7 +86,7 @@ class ControllerDPadState:
 
 
 @dataclass
-class LogitechF710ControllerState:
+class ControllerState:
     """
     This state represents the desired state for the controller.
     """
@@ -109,6 +112,12 @@ class LogitechF710ControllerState:
         self.validate_direction(
             "axes.right_stick.vertical", self.axes.right_stick.vertical
         )
+        self.validate_direction(
+            "axes.left_analog_trigger", self.axes.left_analog_trigger
+        )
+        self.validate_direction(
+            "axes.right_analog_trigger", self.axes.right_analog_trigger
+        )
 
     def validate_direction(self, attribute_name: str, value: float):
         if not isinstance(value, float):
@@ -124,7 +133,13 @@ class LogitechF710ControllerState:
         return asdict(self)
 
 
-class LogitechF710Joystick:
+class Controller(ABC):
+    @abstractmethod
+    def get_state(self) -> ControllerState:
+        """Gets the current controller state of the drone"""
+
+
+class XboxOnePyGameJoystick(Controller):
     """
     The controller works on two main principles
         - That the axes act like a stream of data and are constant
@@ -139,26 +154,28 @@ class LogitechF710Joystick:
         self.joystick.init()
 
         name = self.joystick.get_name()
-        LOGGER.info(f"Detected joystick device: {name}")
-        controller_type = "logitech"
-        if controller_type not in name.lower():
+        LOGGER.info(f"detected joystick device: {name}")
+        if "Microsoft X-Box One" not in name:
             raise ValueError(
-                f"{controller_type.capitalize()} controller not detected. Controller detected was {name}"
+                f"Xbox One controller not detected. Controller detected was {name}"
             )
 
-        num_axes = self.joystick.get_numaxes()
-        num_buttons = self.joystick.get_numbuttons()
-        self.axis_states = [0.0 for i in range(num_axes)]
-        self.button_states = [False for i in range(num_buttons)]
+        axes_count = self.joystick.get_numaxes()
+        buttons_count = self.joystick.get_numbuttons()
+        self.axis_states = [0.0 for i in range(axes_count)]
+        self.button_states = [False for i in range(buttons_count)]
         self.axis_ids = {}
         self.button_ids = {}
         self.dead_zone = 0.07
-        for i in range(num_axes):
+        for i in range(axes_count):
             self.axis_ids[i] = AxisKeys(i)
-        for i in range(num_buttons):
-            self.button_ids[i] = ButtonKeys(i)
+        for i in range(buttons_count):
+            try:
+                self.button_ids[i] = ButtonKeys(i)
+            except Exception as e:
+                LOGGER.error(f"Error when trying to match button {i}", e)
 
-    def get_state(self) -> LogitechF710ControllerState:
+    def get_state(self) -> ControllerState:
         self.pygame_connector.get_events()
 
         left_stick_horizontal = self.joystick.get_axis(
@@ -171,6 +188,10 @@ class LogitechF710Joystick:
         right_stick_vertical = self.joystick.get_axis(
             AxisKeys.RIGHT_STICK_VERTICAL.value
         )
+        left_analog_trigger = self.joystick.get_axis(AxisKeys.LEFT_ANALOG_TRIGGER.value)
+        right_analog_trigger = self.joystick.get_axis(
+            AxisKeys.RIGHT_ANALOG_TRIGGER.value
+        )
 
         if abs(left_stick_horizontal) < self.dead_zone:
             left_stick_horizontal = 0.0
@@ -180,6 +201,10 @@ class LogitechF710Joystick:
             right_stick_horizontal = 0.0
         if abs(right_stick_vertical) < self.dead_zone:
             right_stick_vertical = 0.0
+        if abs(left_analog_trigger) < self.dead_zone:
+            left_analog_trigger = 0.0
+        if abs(right_analog_trigger) < self.dead_zone:
+            right_analog_trigger = 0.0
 
         axes = ControllerAxesState(
             left_stick=StickState(
@@ -188,6 +213,8 @@ class LogitechF710Joystick:
             right_stick=StickState(
                 horizontal=right_stick_horizontal, vertical=right_stick_vertical
             ),
+            left_analog_trigger=left_analog_trigger,
+            right_analog_trigger=right_analog_trigger,
         )
 
         buttons = ControllerButtonPressedState(
@@ -197,12 +224,11 @@ class LogitechF710Joystick:
             Y=self.joystick.get_button(ButtonKeys.Y.value),
             LB=self.joystick.get_button(ButtonKeys.LB.value),
             RB=self.joystick.get_button(ButtonKeys.RB.value),
+            VIEW=self.joystick.get_button(ButtonKeys.VIEW.value),
+            MENU=self.joystick.get_button(ButtonKeys.MENU.value),
+            NA=self.joystick.get_button(ButtonKeys.NA.value),
             LEFT_STICK=self.joystick.get_button(ButtonKeys.LEFT_STICK.value),
             RIGHT_STICK=self.joystick.get_button(ButtonKeys.RIGHT_STICK.value),
-            Start=self.joystick.get_button(ButtonKeys.Start.value),
-            Back=self.joystick.get_button(ButtonKeys.Back.value),
-            Left_trigger=self.joystick.get_button(ButtonKeys.LeftTrigger.value),
-            RightTrigger=self.joystick.get_button(ButtonKeys.RightTrigger.value),
         )
 
         # Retrieve the state of the D-pad buttons
@@ -211,11 +237,6 @@ class LogitechF710Joystick:
             int(hat[DPadKeys.HORIZONTAL.value]),
             int(hat[DPadKeys.VERTICAL.value]),
         )
-
-        print("Current state")
-        print(axes)
-        print(self.joystick.get_numbuttons(), self.joystick)
-        print(d_pad_state)
 
         pressed_button_ids = [
             button.value
@@ -231,15 +252,16 @@ class LogitechF710Joystick:
                 f"Pressed Buttons: {[button.name for button in pressed_buttons]}"
             )
 
-        return LogitechF710ControllerState(
-            axes=axes, buttons=buttons, d_pad=d_pad_state
-        )
+        return ControllerState(axes=axes, buttons=buttons, d_pad=d_pad_state)
 
 
 if __name__ == "__main__":
+    log_level = logging.DEBUG
+    logging.basicConfig(level=log_level)
+    LOGGER.setLevel(log_level)
     pygame_connector = PyGameConnector()
-    pygame_joystick = LogitechF710Joystick(pygame_connector)
-    LOGGER.setLevel("DEBUG")
+    pygame_joystick = XboxOnePyGameJoystick(pygame_connector)
+
     while True:
         state = pygame_joystick.get_state()
         print("Current state")

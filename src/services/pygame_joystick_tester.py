@@ -6,6 +6,7 @@ from pygame_connector import PyGameConnector
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
+
 class JoyStickTester:
     """
     A class for testing the joysticks
@@ -20,8 +21,6 @@ class JoyStickTester:
         name = self.joystick.get_name()
         LOGGER.info(f"Detected joystick device: {name}")
 
-
-        
     def get_state(self) -> None:
         self.pygame_connector.get_events()
 
@@ -31,9 +30,9 @@ class JoyStickTester:
         for button in range(self.joystick.get_numbuttons()):
             LOGGER.info(f"Button {button} value: {self.joystick.get_button(button)}")
         for hat in range(self.joystick.get_numhats()):
-            LOGGER.info(f"Hat {hat} value: {self.joystick.get_hat(hat)}")   
+            LOGGER.info(f"Hat {hat} value: {self.joystick.get_hat(hat)}")
 
-            
+
 if __name__ == "__main__":
     pygame_connector = PyGameConnector()
     joystick_tester = JoyStickTester(pygame_connector)
