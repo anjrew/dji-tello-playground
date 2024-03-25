@@ -1,3 +1,5 @@
+"Here try to create a script that navigates the drone through a course."
+
 from djitellopy import Tello
 import time
 
