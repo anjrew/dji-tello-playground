@@ -41,11 +41,11 @@ tello.move_up(100)
 
 warn_of_flip("left")
 
-# warn_of_flip("right")
+warn_of_flip("right")
 
-# warn_of_flip("forward")
+warn_of_flip("forward")
 
-# warn_of_flip("back")
+warn_of_flip("back")
 
 pause()
 
