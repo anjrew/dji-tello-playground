@@ -31,5 +31,5 @@ class PyGameConnector:
     def get_joystick_count(self) -> int:
         return pygame.joystick.get_count()
 
-    def create_joystick(self, which_js: int) ->pygame.joystick.Joystick:
+    def create_joystick(self, which_js: int) -> pygame.joystick.JoystickType:
         return pygame.joystick.Joystick(which_js)
