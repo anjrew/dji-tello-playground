@@ -53,3 +53,4 @@ To enhance your coding and debugging experience, we recommend using Visual Studi
 - [Swarm Programming](https://drive.google.com/file/d/1vV73j8Axua5dT8gTwts66TzexJLJBqKR/view)
 - [Basic Simulator](https://github.com/Fireline-Science/tello_sim)
 - [Advanced Simulator](https://dev.droneblocks.io/simulator.html)
+- [YolovV8 Inference Container](https://github.com/anjrew/yolo-v8-inference-container/tree/main?tab=readme-ov-file)
