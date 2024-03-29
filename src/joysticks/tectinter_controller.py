@@ -5,42 +5,37 @@ https://de.aliexpress.com/item/32824692489.html?spm=a2g0o.order_list.order_list_
 """
 
 from dataclasses import asdict, dataclass, fields
+from enum import Enum
 import time
 import logging
 from typing import List
 
+
 try:
-    from pygame_connector import PyGameConnector
-except ModuleNotFoundError:
     from joysticks.pygame_connector import PyGameConnector
+    from joysticks.game_controller import (
+        AxisKeys,
+        ControllerAxesState,
+        ControllerDPadState,
+        ControllerState,
+        DPadKeys,
+        StickState,
+        ControllerButtonPressedState,
+    )
+except ModuleNotFoundError:
+    from pygame_connector import PyGameConnector
+    from game_controller import (
+        AxisKeys,
+        ControllerAxesState,
+        ControllerDPadState,
+        ControllerState,
+        DPadKeys,
+        StickState,
+        ControllerButtonPressedState,
+    )
+
 
 LOGGER = logging.getLogger(__name__)
-
-from enum import Enum
-
-
-class DPadKeys(Enum):
-    HORIZONTAL = 0
-    VERTICAL = 1
-
-
-class AxisKeys(Enum):
-    LEFT_STICK_HORIZONTAL = 0
-    LEFT_STICK_VERTICAL = 1
-    RIGHT_STICK_HORIZONTAL = 2
-    RIGHT_STICK_VERTICAL = 3
-
-
-@dataclass
-class StickState:
-    horizontal: float
-    vertical: float
-
-
-@dataclass
-class ControllerAxesState:
-    left_stick: StickState
-    right_stick: StickState
 
 
 class ButtonKeys(Enum):
@@ -59,7 +54,7 @@ class ButtonKeys(Enum):
 
 
 @dataclass
-class ControllerButtonPressedState:
+class TectInterControllerButtonPressedState(ControllerButtonPressedState):
     A: bool
     B: bool
     X: bool
@@ -78,18 +73,7 @@ class ControllerButtonPressedState:
 
 
 @dataclass
-class ControllerDPadState:
-    horizontal_right: int
-    """If positive, the D-pad is pressed right, if negative, the D-pad is pressed left. If 0, the D-pad is not pressed"""
-    vertical_up: int
-    """If positive, the D-pad is pressed up, if negative, the D-pad is pressed down. If 0, the D-pad is not pressed"""
-
-    def get_active(self) -> List[str]:
-        return [field.name for field in fields(self) if getattr(self, field.name) != 0]
-
-
-@dataclass
-class AliExpressControllerState:
+class TectInterControllerState(ControllerState):
     """
     This state represents the desired state for the controller.
     """
@@ -99,7 +83,7 @@ class AliExpressControllerState:
     AXIS_MAX_VAL = 1
 
     axes: ControllerAxesState
-    buttons: ControllerButtonPressedState
+    buttons: TectInterControllerButtonPressedState
     d_pad: ControllerDPadState
 
     def __post_init__(self):
@@ -130,7 +114,7 @@ class AliExpressControllerState:
         return asdict(self)
 
 
-class AliExpressJoystick:
+class TectInterJoystick:
     """
     The controller works on two main principles
         - That the axes act like a stream of data and are constant
@@ -164,7 +148,7 @@ class AliExpressJoystick:
         for i in range(num_buttons):
             self.button_ids[i] = ButtonKeys(i)
 
-    def get_state(self) -> AliExpressControllerState:
+    def get_state(self) -> TectInterControllerState:
         self.pygame_connector.get_events()
 
         left_stick_horizontal = self.joystick.get_axis(
@@ -176,6 +160,10 @@ class AliExpressJoystick:
         )
         right_stick_vertical = self.joystick.get_axis(
             AxisKeys.RIGHT_STICK_VERTICAL.value
+        )
+        left_analog_trigger = self.joystick.get_axis(AxisKeys.LEFT_ANALOG_TRIGGER.value)
+        right_analog_trigger = self.joystick.get_axis(
+            AxisKeys.RIGHT_ANALOG_TRIGGER.value
         )
 
         if abs(left_stick_horizontal) < self.dead_zone:
@@ -194,9 +182,11 @@ class AliExpressJoystick:
             right_stick=StickState(
                 horizontal=right_stick_horizontal, vertical=right_stick_vertical
             ),
+            left_analog_trigger=left_analog_trigger,
+            right_analog_trigger=right_analog_trigger,
         )
 
-        buttons = ControllerButtonPressedState(
+        buttons = TectInterControllerButtonPressedState(
             A=self.joystick.get_button(ButtonKeys.A.value),
             B=self.joystick.get_button(ButtonKeys.B.value),
             X=self.joystick.get_button(ButtonKeys.X.value),
@@ -237,12 +227,12 @@ class AliExpressJoystick:
                 f"Pressed Buttons: {[button.name for button in pressed_buttons]}"
             )
 
-        return AliExpressControllerState(axes=axes, buttons=buttons, d_pad=d_pad_state)
+        return TectInterControllerState(axes=axes, buttons=buttons, d_pad=d_pad_state)
 
 
 if __name__ == "__main__":
     pygame_connector = PyGameConnector()
-    pygame_joystick = AliExpressJoystick(pygame_connector)
+    pygame_joystick = TectInterJoystick(pygame_connector)
     LOGGER.setLevel("DEBUG")
     while True:
         state = pygame_joystick.get_state()

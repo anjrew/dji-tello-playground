@@ -1,45 +1,36 @@
-from abc import ABC, abstractmethod
-from dataclasses import asdict, dataclass, fields
+from dataclasses import dataclass, fields
+from enum import Enum
 import time
 import logging
 from typing import List
 
 try:
     from joysticks.pygame_connector import PyGameConnector
+    from joysticks.game_controller import (
+        AxisKeys,
+        Controller,
+        ControllerAxesState,
+        ControllerDPadState,
+        ControllerState,
+        DPadKeys,
+        StickState,
+        ControllerButtonPressedState,
+    )
 except ModuleNotFoundError:
-    from joysticks.pygame_connector import PyGameConnector
+    from pygame_connector import PyGameConnector
+    from game_controller import (
+        AxisKeys,
+        Controller,
+        ControllerAxesState,
+        ControllerDPadState,
+        ControllerState,
+        DPadKeys,
+        StickState,
+        ControllerButtonPressedState,
+    )
+
 
 LOGGER = logging.getLogger(__name__)
-
-from enum import Enum
-
-
-class XboxDPadKeys(Enum):
-    HORIZONTAL = 0
-    VERTICAL = 1
-
-
-class XboxAxisKeys(Enum):
-    LEFT_STICK_HORIZONTAL = 0
-    LEFT_STICK_VERTICAL = 1
-    LEFT_ANALOG_TRIGGER = 2
-    RIGHT_STICK_HORIZONTAL = 3
-    RIGHT_STICK_VERTICAL = 4
-    RIGHT_ANALOG_TRIGGER = 5
-
-
-@dataclass
-class StickState:
-    horizontal: float
-    vertical: float
-
-
-@dataclass
-class XboxControllerAxesState:
-    left_stick: StickState
-    right_stick: StickState
-    left_analog_trigger: float
-    right_analog_trigger: float
 
 
 class XboxButtonKeys(Enum):
@@ -57,7 +48,7 @@ class XboxButtonKeys(Enum):
 
 
 @dataclass
-class XboxControllerButtonPressedState:
+class XboxControllerButtonPressedState(ControllerButtonPressedState):
     A: bool
     B: bool
     X: bool
@@ -74,72 +65,7 @@ class XboxControllerButtonPressedState:
         return [field.name for field in fields(self) if getattr(self, field.name)]
 
 
-@dataclass
-class XboxControllerDPadState:
-    horizontal_right: int
-    """If positive, the D-pad is pressed right, if negative, the D-pad is pressed left. If 0, the D-pad is not pressed"""
-    vertical_up: int
-    """If positive, the D-pad is pressed up, if negative, the D-pad is pressed down. If 0, the D-pad is not pressed"""
-
-    def get_active(self) -> List[str]:
-        return [field.name for field in fields(self) if getattr(self, field.name) != 0]
-
-
-@dataclass
-class XboxControllerState:
-    """
-    This state represents the desired state for the controller.
-    """
-
-    # The axis control range
-    AXIS_MIN_VAL = -1
-    AXIS_MAX_VAL = 1
-
-    axes: XboxControllerAxesState
-    buttons: XboxControllerButtonPressedState
-    d_pad: XboxControllerDPadState
-
-    def __post_init__(self):
-        self.validate_direction(
-            "axes.left_stick.horizontal", self.axes.left_stick.horizontal
-        )
-        self.validate_direction(
-            "axes.left_stick.vertical", self.axes.left_stick.vertical
-        )
-        self.validate_direction(
-            "axes.right_stick.horizontal", self.axes.right_stick.horizontal
-        )
-        self.validate_direction(
-            "axes.right_stick.vertical", self.axes.right_stick.vertical
-        )
-        self.validate_direction(
-            "axes.left_analog_trigger", self.axes.left_analog_trigger
-        )
-        self.validate_direction(
-            "axes.right_analog_trigger", self.axes.right_analog_trigger
-        )
-
-    def validate_direction(self, attribute_name: str, value: float):
-        if not isinstance(value, float):
-            raise ValueError(
-                f"{attribute_name} value needs to be an float. Got {type(value)}"
-            )
-        if not (self.AXIS_MIN_VAL <= value <= self.AXIS_MAX_VAL):
-            raise ValueError(
-                f"Value {value} for attribute '{attribute_name}' is not in the range [{self.AXIS_MIN_VAL}, {self.AXIS_MAX_VAL}]"
-            )
-
-    def to_dict(self):
-        return asdict(self)
-
-
-class XboxController(ABC):
-    @abstractmethod
-    def get_state(self) -> XboxControllerState:
-        """Gets the current controller state of the drone"""
-
-
-class Xbox360PyGameJoystick(XboxController):
+class Xbox360PyGameJoystick(Controller):
     """
     The controller works on two main principles
         - That the axes act like a stream of data and are constant
@@ -166,30 +92,26 @@ class Xbox360PyGameJoystick(XboxController):
         self.button_ids = {}
         self.dead_zone = 0.07
         for i in range(self.joystick.get_numaxes()):
-            self.axis_ids[i] = XboxAxisKeys(i)
+            self.axis_ids[i] = AxisKeys(i)
         for i in range(self.joystick.get_numbuttons()):
             self.button_ids[i] = XboxButtonKeys(i)
 
-    def get_state(self) -> XboxControllerState:
+    def get_state(self) -> ControllerState:
         self.pygame_connector.get_events()
 
         left_stick_horizontal = self.joystick.get_axis(
-            XboxAxisKeys.LEFT_STICK_HORIZONTAL.value
+            AxisKeys.LEFT_STICK_HORIZONTAL.value
         )
-        left_stick_vertical = self.joystick.get_axis(
-            XboxAxisKeys.LEFT_STICK_VERTICAL.value
-        )
+        left_stick_vertical = self.joystick.get_axis(AxisKeys.LEFT_STICK_VERTICAL.value)
         right_stick_horizontal = self.joystick.get_axis(
-            XboxAxisKeys.RIGHT_STICK_HORIZONTAL.value
+            AxisKeys.RIGHT_STICK_HORIZONTAL.value
         )
         right_stick_vertical = self.joystick.get_axis(
-            XboxAxisKeys.RIGHT_STICK_VERTICAL.value
+            AxisKeys.RIGHT_STICK_VERTICAL.value
         )
-        left_analog_trigger = self.joystick.get_axis(
-            XboxAxisKeys.LEFT_ANALOG_TRIGGER.value
-        )
+        left_analog_trigger = self.joystick.get_axis(AxisKeys.LEFT_ANALOG_TRIGGER.value)
         right_analog_trigger = self.joystick.get_axis(
-            XboxAxisKeys.RIGHT_ANALOG_TRIGGER.value
+            AxisKeys.RIGHT_ANALOG_TRIGGER.value
         )
 
         if abs(left_stick_horizontal) < self.dead_zone:
@@ -205,7 +127,7 @@ class Xbox360PyGameJoystick(XboxController):
         if abs(right_analog_trigger) < self.dead_zone:
             right_analog_trigger = 0.0
 
-        axes = XboxControllerAxesState(
+        axes = ControllerAxesState(
             left_stick=StickState(
                 horizontal=left_stick_horizontal, vertical=left_stick_vertical
             ),
@@ -232,9 +154,9 @@ class Xbox360PyGameJoystick(XboxController):
 
         # Retrieve the state of the D-pad buttons
         hat = self.joystick.get_hat(0)
-        d_pad_state = XboxControllerDPadState(
-            int(hat[XboxDPadKeys.HORIZONTAL.value]),
-            int(hat[XboxDPadKeys.VERTICAL.value]),
+        d_pad_state = ControllerDPadState(
+            int(hat[DPadKeys.HORIZONTAL.value]),
+            int(hat[DPadKeys.VERTICAL.value]),
         )
 
         pressed_button_ids = [
@@ -253,7 +175,7 @@ class Xbox360PyGameJoystick(XboxController):
                 f"Pressed Buttons: {[button.name for button in pressed_buttons]}"
             )
 
-        return XboxControllerState(axes=axes, buttons=buttons, d_pad=d_pad_state)
+        return ControllerState(axes=axes, buttons=buttons, d_pad=d_pad_state)
 
 
 if __name__ == "__main__":
