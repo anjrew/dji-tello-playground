@@ -1,7 +1,10 @@
 import logging
 import time
 
-from pygame_connector import PyGameConnector
+try:
+    from joysticks.pygame_connector import PyGameConnector
+except ModuleNotFoundError:
+    from pygame_connector import PyGameConnector
 
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)

@@ -1,10 +1,10 @@
 from typing import List
 
 try:
-    from services.xbox_360_controller import XboxButtonKeys, Xbox360PyGameJoystick
+    from joysticks.xbox_360_controller import XboxButtonKeys, Xbox360PyGameJoystick
     from tello_controller import TelloActionType, TelloControlState, TelloController
 except ModuleNotFoundError:
-    from services.xbox_360_controller import (
+    from joysticks.xbox_360_controller import (
         XboxButtonKeys,
         Xbox360PyGameJoystick,
     )

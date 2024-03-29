@@ -5,9 +5,9 @@ import logging
 from typing import List
 
 try:
-    from pygame_connector import PyGameConnector
+    from joysticks.pygame_connector import PyGameConnector
 except ModuleNotFoundError:
-    from services.pygame_connector import PyGameConnector
+    from joysticks.pygame_connector import PyGameConnector
 
 LOGGER = logging.getLogger(__name__)
 

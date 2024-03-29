@@ -1,3 +1,9 @@
+"""
+This file contains the class for the Ali Express Controller.
+https://de.aliexpress.com/item/32824692489.html?spm=a2g0o.order_list.order_list_main.5.49305c5fYhRXjs&gatewayAdapt=glo2deu
+![Here](./images/ali_express_controller.jpg)
+"""
+
 from dataclasses import asdict, dataclass, fields
 import time
 import logging
@@ -6,7 +12,7 @@ from typing import List
 try:
     from pygame_connector import PyGameConnector
 except ModuleNotFoundError:
-    from services.pygame_connector import PyGameConnector
+    from joysticks.pygame_connector import PyGameConnector
 
 LOGGER = logging.getLogger(__name__)
 
@@ -83,7 +89,7 @@ class ControllerDPadState:
 
 
 @dataclass
-class LogitechF710ControllerState:
+class AliExpressControllerState:
     """
     This state represents the desired state for the controller.
     """
@@ -124,7 +130,7 @@ class LogitechF710ControllerState:
         return asdict(self)
 
 
-class LogitechF710Joystick:
+class AliExpressJoystick:
     """
     The controller works on two main principles
         - That the axes act like a stream of data and are constant
@@ -158,7 +164,7 @@ class LogitechF710Joystick:
         for i in range(num_buttons):
             self.button_ids[i] = ButtonKeys(i)
 
-    def get_state(self) -> LogitechF710ControllerState:
+    def get_state(self) -> AliExpressControllerState:
         self.pygame_connector.get_events()
 
         left_stick_horizontal = self.joystick.get_axis(
@@ -231,14 +237,12 @@ class LogitechF710Joystick:
                 f"Pressed Buttons: {[button.name for button in pressed_buttons]}"
             )
 
-        return LogitechF710ControllerState(
-            axes=axes, buttons=buttons, d_pad=d_pad_state
-        )
+        return AliExpressControllerState(axes=axes, buttons=buttons, d_pad=d_pad_state)
 
 
 if __name__ == "__main__":
     pygame_connector = PyGameConnector()
-    pygame_joystick = LogitechF710Joystick(pygame_connector)
+    pygame_joystick = AliExpressJoystick(pygame_connector)
     LOGGER.setLevel("DEBUG")
     while True:
         state = pygame_joystick.get_state()

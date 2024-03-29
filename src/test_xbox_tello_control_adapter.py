@@ -1,7 +1,7 @@
 import time
-from pygame_connector import PyGameConnector
-from xbox_tello_control_adapter import XboxTelloControlAdapter
-from services.xbox_360_controller import Xbox360PyGameJoystick
+from joysticks.pygame_connector import PyGameConnector
+from services.xbox_tello_control_adapter import XboxTelloControlAdapter
+from joysticks.xbox_360_controller import Xbox360PyGameJoystick
 
 
 if __name__ == "__main__":

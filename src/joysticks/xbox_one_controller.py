@@ -1,45 +1,50 @@
-from abc import ABC, abstractmethod
-from dataclasses import asdict, dataclass, fields
+"""
+This module contains the implementation of a "Turtle Beach Recon Controller Xbox Series X|S, Xbox One and PC" controller.
+https://www.amazon.de/-/en/gp/product/B0977MTK65/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&th=1
+.. image:: /docs/images/xbox_one_turtle_beach_controller.jpg
+   :alt: Turtle Beach Recon Controller Xbox Series X|S, Xbox One and PC
+   :width: 400px
+   :align: center
+It provides classes for handling the controller's axes, buttons, and D-pad state.
+The `Controller` abstract base class defines the interface for getting the current controller state.
+The `XboxOnePyGameJoystick` class is a concrete implementation of the `Controller` interface using the PyGame library.
+"""
+
+from dataclasses import dataclass, fields
 import time
 import logging
 from typing import List
 
+
 try:
-    from pygame_connector import PyGameConnector
+    from joysticks.pygame_connector import PyGameConnector
+    from joysticks.game_controller import (
+        AxisKeys,
+        Controller,
+        ControllerAxesState,
+        ControllerDPadState,
+        ControllerState,
+        DPadKeys,
+        StickState,
+        ControllerButtonPressedState,
+    )
 except ModuleNotFoundError:
-    from services.pygame_connector import PyGameConnector
+    from pygame_connector import PyGameConnector
+    from game_controller import (
+        AxisKeys,
+        Controller,
+        ControllerAxesState,
+        ControllerDPadState,
+        ControllerState,
+        DPadKeys,
+        StickState,
+        ControllerButtonPressedState,
+    )
+
 
 LOGGER = logging.getLogger(__name__)
 
 from enum import Enum
-
-
-class DPadKeys(Enum):
-    HORIZONTAL = 0
-    VERTICAL = 1
-
-
-class AxisKeys(Enum):
-    LEFT_STICK_HORIZONTAL = 0
-    LEFT_STICK_VERTICAL = 1
-    LEFT_ANALOG_TRIGGER = 2
-    RIGHT_STICK_HORIZONTAL = 3
-    RIGHT_STICK_VERTICAL = 4
-    RIGHT_ANALOG_TRIGGER = 5
-
-
-@dataclass
-class StickState:
-    horizontal: float
-    vertical: float
-
-
-@dataclass
-class ControllerAxesState:
-    left_stick: StickState
-    right_stick: StickState
-    left_analog_trigger: float
-    right_analog_trigger: float
 
 
 class ButtonKeys(Enum):
@@ -57,7 +62,7 @@ class ButtonKeys(Enum):
 
 
 @dataclass
-class ControllerButtonPressedState:
+class XboxOneControllerButtonPressedState(ControllerButtonPressedState):
     A: bool
     B: bool
     X: bool
@@ -72,71 +77,6 @@ class ControllerButtonPressedState:
 
     def get_pressed_buttons(self) -> List[str]:
         return [field.name for field in fields(self) if getattr(self, field.name)]
-
-
-@dataclass
-class ControllerDPadState:
-    horizontal_right: int
-    """If positive, the D-pad is pressed right, if negative, the D-pad is pressed left. If 0, the D-pad is not pressed"""
-    vertical_up: int
-    """If positive, the D-pad is pressed up, if negative, the D-pad is pressed down. If 0, the D-pad is not pressed"""
-
-    def get_active(self) -> List[str]:
-        return [field.name for field in fields(self) if getattr(self, field.name) != 0]
-
-
-@dataclass
-class ControllerState:
-    """
-    This state represents the desired state for the controller.
-    """
-
-    # The axis control range
-    AXIS_MIN_VAL = -1
-    AXIS_MAX_VAL = 1
-
-    axes: ControllerAxesState
-    buttons: ControllerButtonPressedState
-    d_pad: ControllerDPadState
-
-    def __post_init__(self):
-        self.validate_direction(
-            "axes.left_stick.horizontal", self.axes.left_stick.horizontal
-        )
-        self.validate_direction(
-            "axes.left_stick.vertical", self.axes.left_stick.vertical
-        )
-        self.validate_direction(
-            "axes.right_stick.horizontal", self.axes.right_stick.horizontal
-        )
-        self.validate_direction(
-            "axes.right_stick.vertical", self.axes.right_stick.vertical
-        )
-        self.validate_direction(
-            "axes.left_analog_trigger", self.axes.left_analog_trigger
-        )
-        self.validate_direction(
-            "axes.right_analog_trigger", self.axes.right_analog_trigger
-        )
-
-    def validate_direction(self, attribute_name: str, value: float):
-        if not isinstance(value, float):
-            raise ValueError(
-                f"{attribute_name} value needs to be an float. Got {type(value)}"
-            )
-        if not (self.AXIS_MIN_VAL <= value <= self.AXIS_MAX_VAL):
-            raise ValueError(
-                f"Value {value} for attribute '{attribute_name}' is not in the range [{self.AXIS_MIN_VAL}, {self.AXIS_MAX_VAL}]"
-            )
-
-    def to_dict(self):
-        return asdict(self)
-
-
-class Controller(ABC):
-    @abstractmethod
-    def get_state(self) -> ControllerState:
-        """Gets the current controller state of the drone"""
 
 
 class XboxOnePyGameJoystick(Controller):
@@ -217,7 +157,7 @@ class XboxOnePyGameJoystick(Controller):
             right_analog_trigger=right_analog_trigger,
         )
 
-        buttons = ControllerButtonPressedState(
+        buttons = XboxOneControllerButtonPressedState(
             A=self.joystick.get_button(ButtonKeys.A.value),
             B=self.joystick.get_button(ButtonKeys.B.value),
             X=self.joystick.get_button(ButtonKeys.X.value),
