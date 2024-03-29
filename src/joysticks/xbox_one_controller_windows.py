@@ -1,5 +1,5 @@
 """
-This module contains the implementation of a "Turtle Beach Recon Controller Xbox Series X|S, Xbox One and PC" controller.
+This module contains the implementation of a "Turtle Beach Recon Controller Xbox Series X|S, Xbox One and PC" controller for a Windows host.
 This controller does not work on MAC OS. It is a wired controller that can be connected to a PC via USB.
 https://www.amazon.de/-/en/gp/product/B0977MTK65/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&th=1
 .. image:: docs/images/xbox_one_turtle_beach_controller.jpg
@@ -8,7 +8,6 @@ https://www.amazon.de/-/en/gp/product/B0977MTK65/ref=ppx_yo_dt_b_search_asin_tit
    :align: center
 It provides classes for handling the controller's axes, buttons, and D-pad state.
 The `Controller` abstract base class defines the interface for getting the current controller state.
-The `XboxOnePyGameJoystick` class is a concrete implementation of the `Controller` interface using the PyGame library.
 """
 
 from dataclasses import dataclass, fields
@@ -74,7 +73,7 @@ class ButtonKeys(Enum):
 
 
 @dataclass
-class XboxOneControllerButtonPressedState(ControllerButtonPressedState):
+class ButtonPressedState(ControllerButtonPressedState):
     A: bool
     B: bool
     X: bool
@@ -91,7 +90,7 @@ class XboxOneControllerButtonPressedState(ControllerButtonPressedState):
         return [field.name for field in fields(self) if getattr(self, field.name)]
 
 
-class XboxOnePyGameJoystick(Controller):
+class XboxOnePyGameWindowsJoystick(Controller):
     """
     The controller works on two main principles
         - That the axes act like a stream of data and are constant
@@ -101,8 +100,10 @@ class XboxOnePyGameJoystick(Controller):
 
     def __init__(self, pygame_connector: PyGameConnector, joystick_id: int = 0):
 
-        if sys.platform == "darwin":
-            LOGGER.error("Xbox One controller not supported on MAC OS")
+        if "win" not in sys.platform.lower():
+            raise ValueError(
+                f"Windows adapter is being used on a {sys.platform} system"
+            )
 
         self.pygame_connector = pygame_connector
         pygame_connector.init_joystick()
@@ -110,8 +111,8 @@ class XboxOnePyGameJoystick(Controller):
         self.joystick.init()
 
         name = self.joystick.get_name()
-        LOGGER.info(f"detected joystick device: {name}")
-        if "Microsoft X-Box One" not in name:
+        LOGGER.info(f"Detected joystick device: {name}")
+        if "Controller (Xbox One For Windows)" not in name:
             raise ValueError(
                 f"Xbox One controller not detected. Controller detected was {name}"
             )
@@ -173,7 +174,7 @@ class XboxOnePyGameJoystick(Controller):
             right_analog_trigger=right_analog_trigger,
         )
 
-        buttons = XboxOneControllerButtonPressedState(
+        buttons = ButtonPressedState(
             A=self.joystick.get_button(ButtonKeys.A.value),
             B=self.joystick.get_button(ButtonKeys.B.value),
             X=self.joystick.get_button(ButtonKeys.X.value),
@@ -212,18 +213,30 @@ class XboxOnePyGameJoystick(Controller):
 
 
 if __name__ == "__main__":
-    log_level = logging.DEBUG
+    import os
+
+    log_level = logging.INFO
     logging.basicConfig(level=log_level)
     LOGGER.setLevel(log_level)
     pygame_connector = PyGameConnector()
-    pygame_joystick = XboxOnePyGameJoystick(pygame_connector)
+    pygame_joystick = XboxOnePyGameWindowsJoystick(pygame_connector)
+
+    def print_state(state_dict: dict, indent=""):
+        for k, v in state_dict.items():
+            if isinstance(v, dict):
+                print(f"{indent}{k}:")
+                print_state(v, indent + "  ")
+            else:
+                print(f"{indent}{k}: {v}")
 
     while True:
+        os.system("cls" if os.name == "nt" else "clear")  # Clear the console
+        print("\033[1;1H")  # Move the cursor to the top-left corner
+
         state = pygame_joystick.get_state()
-        print("Current state")
+        print("Current state:")
         dict_state = state.to_dict()
 
-        for k, v in dict_state.items():
-            print(k, v)
+        print_state(dict_state)
 
         time.sleep(0.1)

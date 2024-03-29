@@ -8,6 +8,7 @@
         "mhutchie.git-graph",
         "ms-python.flake8",
         "ms-python.black-formatter",
-        "yzhang.markdown-all-in-one"
+        "yzhang.markdown-all-in-one",
+        "hediet.vscode-drawio"
     ]
 }
