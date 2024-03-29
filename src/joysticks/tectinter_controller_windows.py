@@ -18,7 +18,7 @@ try:
         ControllerDPadState,
         ControllerState,
         StickState,
-        ControllerButtonPressedState,
+        _ControllerButtonPressedState,
     )
 except ModuleNotFoundError:
     from pygame_connector import PyGameConnector
@@ -27,7 +27,7 @@ except ModuleNotFoundError:
         ControllerDPadState,
         ControllerState,
         StickState,
-        ControllerButtonPressedState,
+        _ControllerButtonPressedState,
     )
 
 
@@ -49,8 +49,8 @@ class _AxisKeys(Enum):
 
 
 class _ButtonKeys(Enum):
-    A = 1
-    B = 2
+    A = 0
+    B = 1
     X = 2
     Y = 3
     LB = 4
@@ -63,7 +63,7 @@ class _ButtonKeys(Enum):
 
 
 @dataclass
-class _ButtonPressedState(ControllerButtonPressedState):
+class _ButtonPressedState(_ControllerButtonPressedState):
     A: bool
     B: bool
     X: bool
@@ -96,8 +96,9 @@ class TectInterJoystick:
 
         name = self.joystick.get_name()
         _LOGGER.info(f"Detected joystick device: {name}")
-        controller_type = "logitech"
-        if controller_type not in name.lower():
+        # This is how it is dectected on windows
+        controller_type = "Xbox 360 Controller"
+        if controller_type != name:
             raise ValueError(
                 f"{controller_type.capitalize()} controller not detected. Controller detected was {name}"
             )

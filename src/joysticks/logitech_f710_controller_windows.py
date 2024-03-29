@@ -29,7 +29,7 @@ try:
         ControllerAxesState,
         StickState,
         ControllerState,
-        ControllerButtonPressedState,
+        _ControllerButtonPressedState,
         ControllerDPadState,
     )
 except ModuleNotFoundError:
@@ -38,7 +38,7 @@ except ModuleNotFoundError:
         ControllerAxesState,
         StickState,
         ControllerState,
-        ControllerButtonPressedState,
+        _ControllerButtonPressedState,
         ControllerDPadState,
     )
 
@@ -74,7 +74,7 @@ class _ButtonKeys(Enum):
 
 
 @dataclass
-class ControllerButtonPressedState(ControllerButtonPressedState):
+class _ControllerButtonPressedState(_ControllerButtonPressedState):
     A: bool
     B: bool
     X: bool
@@ -166,7 +166,7 @@ class LogitechF710Joystick:
             ),
         )
 
-        buttons = ControllerButtonPressedState(
+        buttons = _ControllerButtonPressedState(
             A=self.joystick.get_button(_ButtonKeys.A.value),
             B=self.joystick.get_button(_ButtonKeys.B.value),
             X=self.joystick.get_button(_ButtonKeys.X.value),

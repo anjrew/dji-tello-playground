@@ -26,7 +26,7 @@ try:
         ControllerDPadState,
         ControllerState,
         StickState,
-        ControllerButtonPressedState,
+        _ControllerButtonPressedState,
     )
 except ModuleNotFoundError:
     from pygame_connector import PyGameConnector
@@ -36,7 +36,7 @@ except ModuleNotFoundError:
         ControllerDPadState,
         ControllerState,
         StickState,
-        ControllerButtonPressedState,
+        _ControllerButtonPressedState,
     )
 
 
@@ -72,7 +72,7 @@ class _ButtonKeys(Enum):
 
 
 @dataclass
-class _ButtonPressedState(ControllerButtonPressedState):
+class _ButtonPressedState(_ControllerButtonPressedState):
     A: bool
     B: bool
     X: bool

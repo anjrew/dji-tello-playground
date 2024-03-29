@@ -30,7 +30,7 @@ class ControllerDPadState:
         return [field.name for field in fields(self) if getattr(self, field.name) != 0]
 
 
-class ControllerButtonPressedState(ABC):
+class _ControllerButtonPressedState(ABC):
     @abstractmethod
     def get_pressed_buttons(self) -> List[str]:
         pass
@@ -47,7 +47,7 @@ class ControllerState:
     AXIS_MAX_VAL = 1
 
     axes: ControllerAxesState
-    buttons: ControllerButtonPressedState
+    buttons: _ControllerButtonPressedState
     d_pad: ControllerDPadState
 
     def __post_init__(self):
