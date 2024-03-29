@@ -39,10 +39,10 @@ except ModuleNotFoundError:
     )
 
 
-LOGGER = logging.getLogger(__name__)
+_LOGGER = logging.getLogger(__name__)
 
 
-class ButtonKeys(Enum):
+class _ButtonKeys(Enum):
     A = 0
     B = 1
     X = 2
@@ -60,7 +60,7 @@ class ButtonKeys(Enum):
     D_PAD_RIGHT = 14
 
 
-class AxisKeys(Enum):
+class _AxisKeys(Enum):
     LEFT_STICK_HORIZONTAL = 0
     LEFT_STICK_VERTICAL = 1
     LEFT_ANALOG_TRIGGER = 4
@@ -70,7 +70,7 @@ class AxisKeys(Enum):
 
 
 # Button keys that are not assigned to any button on the controller
-VOID_BUTTONS = [5]
+_VOID_BUTTONS = [5]
 
 
 @dataclass
@@ -106,14 +106,14 @@ class MacXboxPyGameJoystick(Controller):
         self.joystick.init()
 
         name = self.joystick.get_name()
-        LOGGER.info(f"detected joystick device: {name}")
+        _LOGGER.info(f"detected joystick device: {name}")
 
         if sys.platform != "darwin":
             raise ValueError(
                 f"Xbox controller not detected. Controller detected was {name}"
             )
         else:
-            LOGGER.info("Running on macOS")
+            _LOGGER.info("Running on macOS")
             if name != "Xbox Series X Controller":
                 raise ValueError(
                     f"Xbox controller not detected. Controller detected was {name}"
@@ -125,29 +125,29 @@ class MacXboxPyGameJoystick(Controller):
         self.button_ids = {}
         self.dead_zone = 0.07
         for i in range(self.joystick.get_numaxes()):
-            self.axis_ids[i] = AxisKeys(i)
+            self.axis_ids[i] = _AxisKeys(i)
         mapped_buttons = filter(
-            lambda x: x not in VOID_BUTTONS, range(self.joystick.get_numbuttons())
+            lambda x: x not in _VOID_BUTTONS, range(self.joystick.get_numbuttons())
         )
         for i in mapped_buttons:
-            self.button_ids[i] = ButtonKeys(i)
+            self.button_ids[i] = _ButtonKeys(i)
 
     def get_state(self) -> ControllerState:
         self.pygame_connector.get_events()
 
         left_stick_horizontal = self.joystick.get_axis(
-            AxisKeys.LEFT_STICK_HORIZONTAL.value
+            _AxisKeys.LEFT_STICK_HORIZONTAL.value
         )
-        left_stick_vertical = self.joystick.get_axis(AxisKeys.LEFT_STICK_VERTICAL.value)
+        left_stick_vertical = self.joystick.get_axis(_AxisKeys.LEFT_STICK_VERTICAL.value)
         right_stick_horizontal = self.joystick.get_axis(
-            AxisKeys.RIGHT_STICK_HORIZONTAL.value
+            _AxisKeys.RIGHT_STICK_HORIZONTAL.value
         )
         right_stick_vertical = self.joystick.get_axis(
-            AxisKeys.RIGHT_STICK_VERTICAL.value
+            _AxisKeys.RIGHT_STICK_VERTICAL.value
         )
-        left_analog_trigger = self.joystick.get_axis(AxisKeys.LEFT_ANALOG_TRIGGER.value)
+        left_analog_trigger = self.joystick.get_axis(_AxisKeys.LEFT_ANALOG_TRIGGER.value)
         right_analog_trigger = self.joystick.get_axis(
-            AxisKeys.RIGHT_ANALOG_TRIGGER.value
+            _AxisKeys.RIGHT_ANALOG_TRIGGER.value
         )
 
         if abs(left_stick_horizontal) < self.dead_zone:
@@ -175,23 +175,23 @@ class MacXboxPyGameJoystick(Controller):
         )
 
         buttons = ButtonPressedState(
-            A=self.joystick.get_button(ButtonKeys.A.value),
-            B=self.joystick.get_button(ButtonKeys.B.value),
-            X=self.joystick.get_button(ButtonKeys.X.value),
-            Y=self.joystick.get_button(ButtonKeys.Y.value),
-            LB=self.joystick.get_button(ButtonKeys.LB.value),
-            RB=self.joystick.get_button(ButtonKeys.RB.value),
-            VIEW=self.joystick.get_button(ButtonKeys.VIEW.value),
-            MENU=self.joystick.get_button(ButtonKeys.MENU.value),
-            SHARE=self.joystick.get_button(ButtonKeys.NA.value),
-            LEFT_STICK=self.joystick.get_button(ButtonKeys.LEFT_STICK.value),
-            RIGHT_STICK=self.joystick.get_button(ButtonKeys.RIGHT_STICK.value),
+            A=self.joystick.get_button(_ButtonKeys.A.value),
+            B=self.joystick.get_button(_ButtonKeys.B.value),
+            X=self.joystick.get_button(_ButtonKeys.X.value),
+            Y=self.joystick.get_button(_ButtonKeys.Y.value),
+            LB=self.joystick.get_button(_ButtonKeys.LB.value),
+            RB=self.joystick.get_button(_ButtonKeys.RB.value),
+            VIEW=self.joystick.get_button(_ButtonKeys.VIEW.value),
+            MENU=self.joystick.get_button(_ButtonKeys.MENU.value),
+            SHARE=self.joystick.get_button(_ButtonKeys.NA.value),
+            LEFT_STICK=self.joystick.get_button(_ButtonKeys.LEFT_STICK.value),
+            RIGHT_STICK=self.joystick.get_button(_ButtonKeys.RIGHT_STICK.value),
         )
 
-        right = self.joystick.get_button(ButtonKeys.D_PAD_RIGHT.value)
-        left = self.joystick.get_button(ButtonKeys.D_PAD_LEFT.value)
-        up = self.joystick.get_button(ButtonKeys.D_PAD_UP.value)
-        down = self.joystick.get_button(ButtonKeys.D_PAD_DOWN.value)
+        right = self.joystick.get_button(_ButtonKeys.D_PAD_RIGHT.value)
+        left = self.joystick.get_button(_ButtonKeys.D_PAD_LEFT.value)
+        up = self.joystick.get_button(_ButtonKeys.D_PAD_UP.value)
+        down = self.joystick.get_button(_ButtonKeys.D_PAD_DOWN.value)
 
         d_pad_state = ControllerDPadState(
             horizontal_right=1 if right else -1 if left else 0,
@@ -200,15 +200,15 @@ class MacXboxPyGameJoystick(Controller):
 
         pressed_button_ids = [
             button.value
-            for button in ButtonKeys
+            for button in _ButtonKeys
             if self.joystick.get_button(button.value)
         ]
-        pressed_buttons = [ButtonKeys(button_id) for button_id in pressed_button_ids]
+        pressed_buttons = [_ButtonKeys(button_id) for button_id in pressed_button_ids]
 
-        if LOGGER.getEffectiveLevel() == logging.DEBUG:
-            LOGGER.debug(f"Axes: {axes}")
-            LOGGER.debug(f"Buttons: {buttons}")
-            LOGGER.debug(
+        if _LOGGER.getEffectiveLevel() == logging.DEBUG:
+            _LOGGER.debug(f"Axes: {axes}")
+            _LOGGER.debug(f"Buttons: {buttons}")
+            _LOGGER.debug(
                 f"Pressed Buttons: {[button.name for button in pressed_buttons]}"
             )
 
@@ -218,7 +218,7 @@ class MacXboxPyGameJoystick(Controller):
 if __name__ == "__main__":
     log_level = logging.DEBUG
     logging.basicConfig(level=log_level)
-    LOGGER.setLevel(log_level)
+    _LOGGER.setLevel(log_level)
     pygame_connector = PyGameConnector()
     pygame_joystick = MacXboxPyGameJoystick(pygame_connector)
 

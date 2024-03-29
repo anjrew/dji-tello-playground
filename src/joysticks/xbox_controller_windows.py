@@ -1,22 +1,21 @@
 """
-This module contains the implementation of a "Turtle Beach Recon Controller Xbox Series X|S, Xbox One and PC" controller for a Linux host.
-This controller does not work on MAC OS. It is a wired controller that can be connected to a PC via USB.
-https://www.amazon.de/-/en/gp/product/B0977MTK65/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&th=1
-.. image:: docs/images/xbox_one_turtle_beach_controller.jpg
-   :alt: Turtle Beach Recon Controller Xbox Series X|S, Xbox One and PC
+This module contains the implementation of a General "Xbox Wireless" controller that works with linux systems.
+https://www.amazon.de/-/en/gp/product/B07SDFLVKD/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&th=1
+.. image:: docs/images/xbox_pad.jpeg
+   :alt: General Xbox Wireless Controller
    :width: 400px
    :align: center
 It provides classes for handling the controller's axes, buttons, and D-pad state.
 The `Controller` abstract base class defines the interface for getting the current controller state.
+The `XboxPyGameJoystick` class is a concrete implementation of the `Controller` interface using the PyGame library.
 """
 
 from dataclasses import dataclass, fields
-import sys
-import time
-import logging
 from typing import List
 from enum import Enum
-
+import logging
+import time
+import sys
 
 try:
     from joysticks.pygame_connector import PyGameConnector
@@ -40,21 +39,7 @@ except ModuleNotFoundError:
     )
 
 
-LOGGER = logging.getLogger(__name__)
-
-
-class _DPadKeys(Enum):
-    HORIZONTAL = 0
-    VERTICAL = 1
-
-
-class _AxisKeys(Enum):
-    LEFT_STICK_HORIZONTAL = 0
-    LEFT_STICK_VERTICAL = 1
-    LEFT_ANALOG_TRIGGER = 2
-    RIGHT_STICK_HORIZONTAL = 3
-    RIGHT_STICK_VERTICAL = 4
-    RIGHT_ANALOG_TRIGGER = 5
+_LOGGER = logging.getLogger(__name__)
 
 
 class _ButtonKeys(Enum):
@@ -66,9 +51,23 @@ class _ButtonKeys(Enum):
     RB = 5
     VIEW = 6
     MENU = 7
-    NA = 8
-    LEFT_STICK = 9
-    RIGHT_STICK = 10
+    LEFT_STICK = 8
+    RIGHT_STICK = 9
+    SCREENSHOT = 11
+
+
+class _DPadKeys(Enum):
+    HORIZONTAL = 0
+    VERTICAL = 1
+
+
+class _AxisKeys(Enum):
+    LEFT_STICK_HORIZONTAL = 0
+    LEFT_STICK_VERTICAL = 1
+    LEFT_ANALOG_TRIGGER = 4
+    RIGHT_STICK_HORIZONTAL = 2
+    RIGHT_STICK_VERTICAL = 3
+    RIGHT_ANALOG_TRIGGER = 5
 
 
 @dataclass
@@ -81,7 +80,7 @@ class _ButtonPressedState(ControllerButtonPressedState):
     RB: bool
     VIEW: bool
     MENU: bool
-    NA: bool
+    SCREENSHOT: bool
     LEFT_STICK: bool
     RIGHT_STICK: bool
 
@@ -89,7 +88,11 @@ class _ButtonPressedState(ControllerButtonPressedState):
         return [field.name for field in fields(self) if getattr(self, field.name)]
 
 
-class LinuxXboxOnePyGameJoystick(Controller):
+# Button keys that are not assigned to any button on the controller
+VOID_BUTTONS = [10, 12, 13, 14, 15]
+
+
+class WindowsXboxPyGameJoystick(Controller):
     """
     The controller works on two main principles
         - That the axes act like a stream of data and are constant
@@ -98,36 +101,35 @@ class LinuxXboxOnePyGameJoystick(Controller):
     """
 
     def __init__(self, pygame_connector: PyGameConnector, joystick_id: int = 0):
-
-        if "linux" not in sys.platform.lower():
-            raise ValueError(f"Linux adapter is being used on a {sys.platform} system")
-
         self.pygame_connector = pygame_connector
         pygame_connector.init_joystick()
         self.joystick = pygame_connector.create_joystick(joystick_id)
         self.joystick.init()
 
         name = self.joystick.get_name()
-        LOGGER.info(f"detected joystick device: {name}")
-        if "Microsoft X-Box One" not in name:
-            raise ValueError(
-                f"Xbox One controller not detected. Controller detected was {name}"
-            )
+        _LOGGER.info(f"detected joystick device: {name}")
 
-        axes_count = self.joystick.get_numaxes()
-        buttons_count = self.joystick.get_numbuttons()
-        self.axis_states = [0.0 for i in range(axes_count)]
-        self.button_states = [False for i in range(buttons_count)]
+        if not sys.platform.startswith("win"):
+            raise ValueError("This class is only supported on Windows systems")
+        else:
+            _LOGGER.info("Running on Windows")
+            if name != "Xbox Series X Controller":
+                raise ValueError(
+                    f"Xbox controller not detected. Controller detected was {name}"
+                )
+
+        self.axis_states = [0.0] * self.joystick.get_numaxes()
+        self.button_states = [False] * self.joystick.get_numbuttons()
         self.axis_ids = {}
         self.button_ids = {}
         self.dead_zone = 0.07
-        for i in range(axes_count):
+        for i in range(self.joystick.get_numaxes()):
             self.axis_ids[i] = _AxisKeys(i)
-        for i in range(buttons_count):
-            try:
-                self.button_ids[i] = _ButtonKeys(i)
-            except Exception as e:
-                LOGGER.error(f"Error when trying to match button {i}", e)
+        mapped_buttons = filter(
+            lambda x: x not in VOID_BUTTONS, range(self.joystick.get_numbuttons())
+        )
+        for i in mapped_buttons:
+            self.button_ids[i] = _ButtonKeys(i)
 
     def get_state(self) -> ControllerState:
         self.pygame_connector.get_events()
@@ -184,7 +186,7 @@ class LinuxXboxOnePyGameJoystick(Controller):
             RB=self.joystick.get_button(_ButtonKeys.RB.value),
             VIEW=self.joystick.get_button(_ButtonKeys.VIEW.value),
             MENU=self.joystick.get_button(_ButtonKeys.MENU.value),
-            NA=self.joystick.get_button(_ButtonKeys.NA.value),
+            SCREENSHOT=self.joystick.get_button(_ButtonKeys.SCREENSHOT.value),
             LEFT_STICK=self.joystick.get_button(_ButtonKeys.LEFT_STICK.value),
             RIGHT_STICK=self.joystick.get_button(_ButtonKeys.RIGHT_STICK.value),
         )
@@ -203,10 +205,10 @@ class LinuxXboxOnePyGameJoystick(Controller):
         ]
         pressed_buttons = [_ButtonKeys(button_id) for button_id in pressed_button_ids]
 
-        if LOGGER.getEffectiveLevel() == logging.DEBUG:
-            LOGGER.debug(f"Axes: {axes}")
-            LOGGER.debug(f"Buttons: {buttons}")
-            LOGGER.debug(
+        if _LOGGER.getEffectiveLevel() == logging.DEBUG:
+            _LOGGER.debug(f"Axes: {axes}")
+            _LOGGER.debug(f"Buttons: {buttons}")
+            _LOGGER.debug(
                 f"Pressed Buttons: {[button.name for button in pressed_buttons]}"
             )
 
@@ -218,9 +220,9 @@ if __name__ == "__main__":
 
     log_level = logging.INFO
     logging.basicConfig(level=log_level)
-    LOGGER.setLevel(log_level)
+    _LOGGER.setLevel(log_level)
     pygame_connector = PyGameConnector()
-    pygame_joystick = LinuxXboxOnePyGameJoystick(pygame_connector)
+    pygame_joystick = WindowsXboxPyGameJoystick(pygame_connector)
 
     def print_state(state_dict: dict, indent=""):
         for k, v in state_dict.items():
