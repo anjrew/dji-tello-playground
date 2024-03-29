@@ -49,9 +49,9 @@ class XboxTelloControlAdapter(TelloController):
         t = self.t
 
         return TelloControlState(
-            forward_velocity=t(-controller_state.axes.left_stick.vertical),
-            right_velocity=t(controller_state.axes.left_stick.horizontal),
-            up_velocity=t(-controller_state.axes.right_stick.vertical),
-            yaw_right_velocity=t(controller_state.axes.right_stick.horizontal),
+            forward_velocity=t(-controller_state.axes.left_stick.vertical_down),
+            right_velocity=t(controller_state.axes.left_stick.horizontal_right),
+            up_velocity=t(-controller_state.axes.right_stick.vertical_down),
+            yaw_right_velocity=t(controller_state.axes.right_stick.horizontal_right),
             events=events,
         )

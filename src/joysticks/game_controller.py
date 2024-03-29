@@ -5,8 +5,10 @@ from typing import List
 
 @dataclass
 class StickState:
-    horizontal: float
-    vertical: float
+    horizontal_right: float
+    "If positive the stick is in the right position, else left"
+    vertical_down: float
+    "If positive the stick is in the down position, else up"
 
 
 @dataclass
@@ -50,16 +52,16 @@ class ControllerState:
 
     def __post_init__(self):
         self.validate_direction(
-            "axes.left_stick.horizontal", self.axes.left_stick.horizontal
+            "axes.left_stick.horizontal", self.axes.left_stick.horizontal_right
         )
         self.validate_direction(
-            "axes.left_stick.vertical", self.axes.left_stick.vertical
+            "axes.left_stick.vertical", self.axes.left_stick.vertical_down
         )
         self.validate_direction(
-            "axes.right_stick.horizontal", self.axes.right_stick.horizontal
+            "axes.right_stick.horizontal", self.axes.right_stick.horizontal_right
         )
         self.validate_direction(
-            "axes.right_stick.vertical", self.axes.right_stick.vertical
+            "axes.right_stick.vertical", self.axes.right_stick.vertical_down
         )
         self.validate_direction(
             "axes.left_analog_trigger", self.axes.left_analog_trigger

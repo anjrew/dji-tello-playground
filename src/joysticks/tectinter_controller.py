@@ -84,16 +84,16 @@ class TectInterControllerState(ControllerState):
 
     def __post_init__(self):
         self.validate_direction(
-            "axes.left_stick.horizontal", self.axes.left_stick.horizontal
+            "axes.left_stick.horizontal", self.axes.left_stick.horizontal_right
         )
         self.validate_direction(
-            "axes.left_stick.vertical", self.axes.left_stick.vertical
+            "axes.left_stick.vertical", self.axes.left_stick.vertical_down
         )
         self.validate_direction(
-            "axes.right_stick.horizontal", self.axes.right_stick.horizontal
+            "axes.right_stick.horizontal", self.axes.right_stick.horizontal_right
         )
         self.validate_direction(
-            "axes.right_stick.vertical", self.axes.right_stick.vertical
+            "axes.right_stick.vertical", self.axes.right_stick.vertical_down
         )
 
     def validate_direction(self, attribute_name: str, value: float):
@@ -173,10 +173,12 @@ class TectInterJoystick:
 
         axes = ControllerAxesState(
             left_stick=StickState(
-                horizontal=left_stick_horizontal, vertical=left_stick_vertical
+                horizontal_right=left_stick_horizontal,
+                vertical_down=left_stick_vertical,
             ),
             right_stick=StickState(
-                horizontal=right_stick_horizontal, vertical=right_stick_vertical
+                horizontal_right=right_stick_horizontal,
+                vertical_down=right_stick_vertical,
             ),
             left_analog_trigger=left_analog_trigger,
             right_analog_trigger=right_analog_trigger,

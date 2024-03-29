@@ -157,10 +157,12 @@ class LinuxXboxPyGameJoystick(Controller):
 
         axes = ControllerAxesState(
             left_stick=StickState(
-                horizontal=left_stick_horizontal, vertical=left_stick_vertical
+                horizontal_right=left_stick_horizontal,
+                vertical_down=left_stick_vertical,
             ),
             right_stick=StickState(
-                horizontal=right_stick_horizontal, vertical=right_stick_vertical
+                horizontal_right=right_stick_horizontal,
+                vertical_down=right_stick_vertical,
             ),
             left_analog_trigger=left_analog_trigger,
             right_analog_trigger=right_analog_trigger,

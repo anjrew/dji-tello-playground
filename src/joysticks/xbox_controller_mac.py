@@ -138,14 +138,18 @@ class MacXboxPyGameJoystick(Controller):
         left_stick_horizontal = self.joystick.get_axis(
             _AxisKeys.LEFT_STICK_HORIZONTAL.value
         )
-        left_stick_vertical = self.joystick.get_axis(_AxisKeys.LEFT_STICK_VERTICAL.value)
+        left_stick_vertical = self.joystick.get_axis(
+            _AxisKeys.LEFT_STICK_VERTICAL.value
+        )
         right_stick_horizontal = self.joystick.get_axis(
             _AxisKeys.RIGHT_STICK_HORIZONTAL.value
         )
         right_stick_vertical = self.joystick.get_axis(
             _AxisKeys.RIGHT_STICK_VERTICAL.value
         )
-        left_analog_trigger = self.joystick.get_axis(_AxisKeys.LEFT_ANALOG_TRIGGER.value)
+        left_analog_trigger = self.joystick.get_axis(
+            _AxisKeys.LEFT_ANALOG_TRIGGER.value
+        )
         right_analog_trigger = self.joystick.get_axis(
             _AxisKeys.RIGHT_ANALOG_TRIGGER.value
         )
@@ -165,10 +169,12 @@ class MacXboxPyGameJoystick(Controller):
 
         axes = ControllerAxesState(
             left_stick=StickState(
-                horizontal=left_stick_horizontal, vertical=left_stick_vertical
+                horizontal_right=left_stick_horizontal,
+                vertical_down=left_stick_vertical,
             ),
             right_stick=StickState(
-                horizontal=right_stick_horizontal, vertical=right_stick_vertical
+                horizontal_right=right_stick_horizontal,
+                vertical_down=right_stick_vertical,
             ),
             left_analog_trigger=left_analog_trigger,
             right_analog_trigger=right_analog_trigger,
