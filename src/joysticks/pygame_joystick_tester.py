@@ -6,7 +6,6 @@ try:
 except ModuleNotFoundError:
     from pygame_connector import PyGameConnector
 
-logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 
@@ -39,9 +38,11 @@ class JoyStickTester:
 if __name__ == "__main__":
     import os
 
+    logging.basicConfig(level=logging.INFO)
+    LOGGER.setLevel("DEBUG")
+
     pygame_connector = PyGameConnector()
     joystick_tester = JoyStickTester(pygame_connector)
-    LOGGER.setLevel("DEBUG")
 
     while True:
         os.system("cls" if os.name == "nt" else "clear")  # Clear the console
