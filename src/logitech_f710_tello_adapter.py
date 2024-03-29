@@ -1,6 +1,6 @@
 from typing import List
 
-from joysticks.logitech_f710_controller import LogitechF710Joystick
+from joysticks.logitech_f710_controller_windows import LogitechF710Joystick
 from services.tello_controller import (
     TelloActionType,
     TelloControlState,
