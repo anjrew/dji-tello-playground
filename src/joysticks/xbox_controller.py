@@ -41,7 +41,7 @@ class XboxPyGameController(Controller):
     platform_controller: Controller
 
     def __init__(self, pygame_connector: PyGameConnector, joystick_id: int = 0):
-        if sys.platform == "darwin":
+        if "darwin" in sys.platform:
             self.platform_controller = MacXboxPyGameJoystick(
                 pygame_connector, joystick_id
             )

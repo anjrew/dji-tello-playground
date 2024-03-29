@@ -108,7 +108,7 @@ class MacXboxPyGameJoystick(Controller):
         name = self.joystick.get_name()
         _LOGGER.info(f"detected joystick device: {name}")
 
-        if sys.platform != "darwin":
+        if "darwin" not in sys.platform:
             raise ValueError(
                 f"Xbox controller not detected. Controller detected was {name}"
             )
