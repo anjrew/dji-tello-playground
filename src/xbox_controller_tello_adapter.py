@@ -1,13 +1,14 @@
 from typing import List
 
+from joysticks.pygame_connector import PyGameConnector
 from joysticks.xbox_controller import XboxPyGameController
-
 
 from services.tello_controller import (
     TelloActionType,
     TelloControlState,
     TelloController,
 )
+from test_utils import run_adapter_test
 
 
 class XboxTelloControlAdapter(TelloController):
@@ -56,3 +57,10 @@ class XboxTelloControlAdapter(TelloController):
             yaw_right_velocity=t(controller_state.axes.right_stick.horizontal_right),
             events=events,
         )
+
+
+if __name__ == "__main__":
+    pygame_connector = PyGameConnector()
+    controller = XboxPyGameController(pygame_connector)
+    tello_control = XboxTelloControlAdapter(controller)
+    run_adapter_test(tello_control)
