@@ -8,8 +8,8 @@ from joysticks.pygame_connector import PyGameConnector
 from services.xbox_tello_control_adapter import XboxTelloControlAdapter
 
 # from services.xbox_one_tello_control_adapter import XboxOneTelloControlAdapter
-from joysticks.xbox_controller import XboxPyGameJoystick
-from joysticks.xbox_one_controller_linux import XboxOnePyGameLinuxJoystick
+from joysticks.xbox_controller import XboxPyGameController
+from joysticks.xbox_one_controller_linux import LinuxXboxOnePyGameJoystick
 
 import logging
 
@@ -22,12 +22,12 @@ def main(controller_type: str, cadence_secs: float, log_level: str) -> None:
 
     pygame_connector = PyGameConnector()
 
-    joystick: Union[XboxPyGameJoystick, XboxOnePyGameLinuxJoystick]
+    joystick: Union[XboxPyGameController, LinuxXboxOnePyGameJoystick]
     controller: XboxTelloControlAdapter
     # controller: Union[XboxTelloControlAdapter, XboxOneTelloControlAdapter]
 
     if controller_type == "xbox360":
-        joystick = XboxPyGameJoystick(pygame_connector)
+        joystick = XboxPyGameController(pygame_connector)
         controller = XboxTelloControlAdapter(joystick)
     # elif controller_type == "xboxone":
     #     joystick = XboxOnePyGameJoystick(pygame_connector)

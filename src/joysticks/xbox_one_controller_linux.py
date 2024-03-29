@@ -90,7 +90,7 @@ class ButtonPressedState(ControllerButtonPressedState):
         return [field.name for field in fields(self) if getattr(self, field.name)]
 
 
-class XboxOnePyGameLinuxJoystick(Controller):
+class LinuxXboxOnePyGameJoystick(Controller):
     """
     The controller works on two main principles
         - That the axes act like a stream of data and are constant
@@ -217,7 +217,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=log_level)
     LOGGER.setLevel(log_level)
     pygame_connector = PyGameConnector()
-    pygame_joystick = XboxOnePyGameLinuxJoystick(pygame_connector)
+    pygame_joystick = LinuxXboxOnePyGameJoystick(pygame_connector)
 
     def print_state(state_dict: dict, indent=""):
         for k, v in state_dict.items():
