@@ -1,6 +1,8 @@
 import argparse
 import logging
 
+from control_via_controller import main
+
 args = argparse.ArgumentParser()
 args.add_argument(
     "--controller",
@@ -16,4 +18,4 @@ CADENCE_SECS = 0.1
 
 
 if __name__ == "__main__":
-    main()
+    main("xbox360", cadence_secs=CADENCE_SECS, log_level="INFO")

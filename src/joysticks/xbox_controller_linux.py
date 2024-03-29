@@ -88,7 +88,7 @@ class ButtonPressedState(ControllerButtonPressedState):
         return [field.name for field in fields(self) if getattr(self, field.name)]
 
 
-class XboxPyGameJoystick(Controller):
+class LinuxXboxPyGameJoystick(Controller):
     """
     The controller works on two main principles
         - That the axes act like a stream of data and are constant
@@ -105,21 +105,14 @@ class XboxPyGameJoystick(Controller):
         name = self.joystick.get_name()
         LOGGER.info(f"detected joystick device: {name}")
 
-        if sys.platform == "darwin":
-            LOGGER.info("Running on macOS")
-            if name != "Xbox Series X Controller":
-                raise ValueError(
-                    f"Xbox controller not detected. Controller detected was {name}"
-                )
-        elif sys.platform.startswith(""):
+        if not sys.platform.startswith("linux"):
+            raise ValueError("This class is only supported on Linux systems")
+        else:
+            LOGGER.info("Running on Linux")
             if "360" not in name or "xbox" not in name.lower():
                 raise ValueError(
                     f"Xbox controller not detected. Controller detected was {name}"
                 )
-        else:
-            raise ValueError(
-                f"Xbox controller not detected. Controller detected was {name}"
-            )
 
         self.axis_states = [0.0] * self.joystick.get_numaxes()
         self.button_states = [False] * self.joystick.get_numbuttons()
@@ -216,7 +209,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=log_level)
     LOGGER.setLevel(log_level)
     pygame_connector = PyGameConnector()
-    pygame_joystick = XboxPyGameJoystick(pygame_connector)
+    pygame_joystick = LinuxXboxPyGameJoystick(pygame_connector)
 
     while True:
         state = pygame_joystick.get_state()

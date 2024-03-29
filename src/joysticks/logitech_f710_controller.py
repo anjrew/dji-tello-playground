@@ -1,3 +1,35 @@
+"""
+This module provides a LogitechF710Joystick class that represents a Logitech F710 controller.
+It allows you to retrieve the state of the controller's axes, buttons, and D-pad.
+
+Example usage:
+    pygame_connector = PyGameConnector()
+    pygame_joystick = LogitechF710Joystick(pygame_connector)
+    LOGGER.setLevel("DEBUG")
+    while True:
+        state = pygame_joystick.get_state()
+        print("Current state")
+        dict_state = state.to_dict()
+
+        for k, v in dict_state.items():
+            print(k, v)
+
+        time.sleep(0.1)
+"""
+
+from dataclasses import asdict, dataclass, fields
+import time
+import logging
+from typing import List
+
+try:
+    from pygame_connector import PyGameConnector
+except ModuleNotFoundError:
+    from joysticks.pygame_connector import PyGameConnector
+
+LOGGER = logging.getLogger(__name__)
+
+...
 from dataclasses import asdict, dataclass, fields
 import time
 import logging

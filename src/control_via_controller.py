@@ -8,30 +8,12 @@ from joysticks.pygame_connector import PyGameConnector
 from services.xbox_tello_control_adapter import XboxTelloControlAdapter
 
 # from services.xbox_one_tello_control_adapter import XboxOneTelloControlAdapter
-from joysticks.xbox_controller_linux import XboxPyGameJoystick
+from joysticks.xbox_controller import XboxPyGameJoystick
 from joysticks.xbox_one_controller import XboxOnePyGameJoystick
 
 import logging
 
-args = argparse.ArgumentParser()
-args.add_argument(
-    "--controller",
-    default="xbox360",
-    choices=["xbox360", "xboxone"],
-    help="Specify the controller type (default: xbox360)",
-)
-args.add_argument(
-    "--cadence",
-    type=float,
-    default=0.1,
-    help="Specify the cadence in seconds (default: 0.1)",
-)
-args.add_argument(
-    "--log-level",
-    default="INFO",
-    choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-    help="Specify the log level (default: INFO)",
-)
+LOGGER = logging.getLogger(__name__)
 
 
 def main(controller_type: str, cadence_secs: float, log_level: str) -> None:
@@ -69,5 +51,24 @@ def main(controller_type: str, cadence_secs: float, log_level: str) -> None:
 
 
 if __name__ == "__main__":
+    args = argparse.ArgumentParser()
+    args.add_argument(
+        "--controller",
+        default="xbox360",
+        choices=["xbox360", "xboxone"],
+        help="Specify the controller type (default: xbox360)",
+    )
+    args.add_argument(
+        "--cadence",
+        type=float,
+        default=0.1,
+        help="Specify the cadence in seconds (default: 0.1)",
+    )
+    args.add_argument(
+        "--log-level",
+        default="INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        help="Specify the log level (default: INFO)",
+    )
     parsed_args = args.parse_args()
     main(parsed_args.controller, parsed_args.cadence, parsed_args.log_level)

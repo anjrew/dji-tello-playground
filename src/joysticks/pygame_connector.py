@@ -5,6 +5,9 @@ from pygame.event import Event
 
 
 class PyGameConnector:
+    """
+    This class is for interacting with Pygame events and joysticks.
+    """
 
     def __init__(self):
         pygame.init()
