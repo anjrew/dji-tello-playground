@@ -14,22 +14,18 @@ from typing import List
 try:
     from joysticks.pygame_connector import PyGameConnector
     from joysticks.game_controller import (
-        AxisKeys,
         ControllerAxesState,
         ControllerDPadState,
         ControllerState,
-        DPadKeys,
         StickState,
         ControllerButtonPressedState,
     )
 except ModuleNotFoundError:
     from pygame_connector import PyGameConnector
     from game_controller import (
-        AxisKeys,
         ControllerAxesState,
         ControllerDPadState,
         ControllerState,
-        DPadKeys,
         StickState,
         ControllerButtonPressedState,
     )

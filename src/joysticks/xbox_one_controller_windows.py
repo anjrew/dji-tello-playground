@@ -11,10 +11,11 @@ The `Controller` abstract base class defines the interface for getting the curre
 """
 
 from dataclasses import dataclass, fields
+from typing import List
+from enum import Enum
+import logging
 import sys
 import time
-import logging
-from typing import List
 
 
 try:
@@ -38,10 +39,7 @@ except ModuleNotFoundError:
         ControllerButtonPressedState,
     )
 
-
 LOGGER = logging.getLogger(__name__)
-
-from enum import Enum
 
 
 class DPadKeys(Enum):
@@ -52,9 +50,9 @@ class DPadKeys(Enum):
 class AxisKeys(Enum):
     LEFT_STICK_HORIZONTAL = 0
     LEFT_STICK_VERTICAL = 1
-    LEFT_ANALOG_TRIGGER = 2
-    RIGHT_STICK_HORIZONTAL = 3
-    RIGHT_STICK_VERTICAL = 4
+    LEFT_ANALOG_TRIGGER = 4
+    RIGHT_STICK_HORIZONTAL = 2
+    RIGHT_STICK_VERTICAL = 3
     RIGHT_ANALOG_TRIGGER = 5
 
 
@@ -67,9 +65,9 @@ class ButtonKeys(Enum):
     RB = 5
     VIEW = 6
     MENU = 7
-    NA = 8
-    LEFT_STICK = 9
-    RIGHT_STICK = 10
+    LEFT_STICK = 8
+    RIGHT_STICK = 9
+    SCREENSHOT = 11
 
 
 @dataclass
@@ -82,7 +80,7 @@ class ButtonPressedState(ControllerButtonPressedState):
     RB: bool
     VIEW: bool
     MENU: bool
-    NA: bool
+    SCREENSHOT: bool
     LEFT_STICK: bool
     RIGHT_STICK: bool
 
@@ -183,7 +181,7 @@ class XboxOnePyGameWindowsJoystick(Controller):
             RB=self.joystick.get_button(ButtonKeys.RB.value),
             VIEW=self.joystick.get_button(ButtonKeys.VIEW.value),
             MENU=self.joystick.get_button(ButtonKeys.MENU.value),
-            NA=self.joystick.get_button(ButtonKeys.NA.value),
+            SCREENSHOT=self.joystick.get_button(ButtonKeys.SCREENSHOT.value),
             LEFT_STICK=self.joystick.get_button(ButtonKeys.LEFT_STICK.value),
             RIGHT_STICK=self.joystick.get_button(ButtonKeys.RIGHT_STICK.value),
         )
