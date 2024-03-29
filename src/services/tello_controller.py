@@ -10,6 +10,10 @@ class TelloActionType(Enum):
     EMERGENCY_LAND = 2
     INCREASE_SPEED_CM_S = 3
     DECREASE_SPEED_CM_S = 4
+    FLIP_FORWARD = 5
+    FLIP_BACK = 6
+    FLIP_LEFT = 7
+    FLIP_RIGHT = 8
 
 
 @dataclass

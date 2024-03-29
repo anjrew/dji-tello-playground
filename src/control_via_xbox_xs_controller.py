@@ -3,7 +3,7 @@ import time
 import logging
 from services.tello_command_dispatcher import TelloCommandDispatcher
 from services.tello_connector import TelloConnector
-from services.xbox_tello_control_adapter import XboxTelloControlAdapter
+from xbox_controller_tello_adapter import XboxTelloControlAdapter
 from joysticks.pygame_connector import PyGameConnector
 from joysticks.xbox_controller_linux import XboxPyGameJoystick
 from djitellopy import Tello

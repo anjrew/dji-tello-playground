@@ -1,12 +1,17 @@
 import time
-from joysticks.pygame_connector import PyGameConnector
-from services.xbox_tello_control_adapter import XboxTelloControlAdapter
-from joysticks.xbox_controller_linux import XboxPyGameJoystick
 
+try:
+    from joysticks.pygame_connector import PyGameConnector
+    from xbox_controller_tello_adapter import XboxTelloControlAdapter
+    from joysticks.xbox_controller import XboxPyGameController
+except:
+    from .joysticks.pygame_connector import PyGameConnector
+    from .xbox_controller_tello_adapter import XboxTelloControlAdapter
+    from .joysticks.xbox_controller import XboxPyGameController
 
 if __name__ == "__main__":
     pygame_connector = PyGameConnector()
-    xbox_controller = XboxPyGameJoystick(pygame_connector)
+    xbox_controller = XboxPyGameController(pygame_connector)
 
     # Create an instance of XboxTelloControlAdapter with the Xbox controller
     tello_control_adapter = XboxTelloControlAdapter(xbox_controller)
