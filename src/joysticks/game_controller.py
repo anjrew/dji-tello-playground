@@ -1,21 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, fields
-from enum import Enum
 from typing import List
-
-
-class DPadKeys(Enum):
-    HORIZONTAL = 0
-    VERTICAL = 1
-
-
-class AxisKeys(Enum):
-    LEFT_STICK_HORIZONTAL = 0
-    LEFT_STICK_VERTICAL = 1
-    LEFT_ANALOG_TRIGGER = 2
-    RIGHT_STICK_HORIZONTAL = 3
-    RIGHT_STICK_VERTICAL = 4
-    RIGHT_ANALOG_TRIGGER = 5
 
 
 @dataclass

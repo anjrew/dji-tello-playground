@@ -1,12 +1,12 @@
 from typing import List
 
 try:
-    from joysticks.xbox_360_controller import XboxButtonKeys, Xbox360PyGameJoystick
+    from joysticks.xbox_controller_linux import XboxLinuxButtonKeys, XboxPyGameJoystick
     from tello_controller import TelloActionType, TelloControlState, TelloController
 except ModuleNotFoundError:
-    from joysticks.xbox_360_controller import (
-        XboxButtonKeys,
-        Xbox360PyGameJoystick,
+    from joysticks.xbox_controller_linux import (
+        XboxLinuxButtonKeys,
+        XboxPyGameJoystick,
     )
     from services.tello_controller import (
         TelloActionType,
@@ -17,7 +17,7 @@ except ModuleNotFoundError:
 
 class XboxTelloControlAdapter(TelloController):
 
-    def __init__(self, controller: Xbox360PyGameJoystick):
+    def __init__(self, controller: XboxPyGameJoystick):
         self.xbox_controller = controller
 
     def t(self, controller_axis_value: float) -> int:
@@ -31,11 +31,11 @@ class XboxTelloControlAdapter(TelloController):
         d_pad = controller_state.d_pad
 
         events: List[TelloActionType] = []
-        if XboxButtonKeys.Y.name in pressed_buttons:
+        if XboxLinuxButtonKeys.Y.name in pressed_buttons:
             events.append(TelloActionType.TAKEOFF)
-        if XboxButtonKeys.A.name in pressed_buttons:
+        if XboxLinuxButtonKeys.A.name in pressed_buttons:
             events.append(TelloActionType.LAND)
-        if XboxButtonKeys.B.name in pressed_buttons:
+        if XboxLinuxButtonKeys.B.name in pressed_buttons:
             events.append(TelloActionType.EMERGENCY_LAND)
 
         if d_pad.vertical_up == 1:

@@ -1,30 +1,39 @@
+"""
+This module contains the implementation of a General "Xbox Wireless" controller.
+https://www.amazon.de/-/en/gp/product/B07SDFLVKD/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&th=1
+.. image:: docs/images/xbox_pad.jpeg
+   :alt: General Xbox Wireless Controller
+   :width: 400px
+   :align: center
+It provides classes for handling the controller's axes, buttons, and D-pad state.
+The `Controller` abstract base class defines the interface for getting the current controller state.
+The `XboxPyGameJoystick` class is a concrete implementation of the `Controller` interface using the PyGame library.
+"""
+
 from dataclasses import dataclass, fields
-from enum import Enum
-import time
-import logging
 from typing import List
+from enum import Enum
+import logging
+import time
+import sys
 
 try:
     from joysticks.pygame_connector import PyGameConnector
     from joysticks.game_controller import (
-        AxisKeys,
         Controller,
         ControllerAxesState,
         ControllerDPadState,
         ControllerState,
-        DPadKeys,
         StickState,
         ControllerButtonPressedState,
     )
 except ModuleNotFoundError:
     from pygame_connector import PyGameConnector
     from game_controller import (
-        AxisKeys,
         Controller,
         ControllerAxesState,
         ControllerDPadState,
         ControllerState,
-        DPadKeys,
         StickState,
         ControllerButtonPressedState,
     )
@@ -33,22 +42,39 @@ except ModuleNotFoundError:
 LOGGER = logging.getLogger(__name__)
 
 
-class XboxButtonKeys(Enum):
+class ButtonKeys(Enum):
     A = 0
     B = 1
     X = 2
     Y = 3
-    LB = 4
-    RB = 5
-    VIEW = 6
-    MENU = 7
-    NA = 8
-    LEFT_STICK = 9
-    RIGHT_STICK = 10
+    LB = 9
+    RB = 10
+    VIEW = 4
+    MENU = 6
+    NA = 15
+    LEFT_STICK = 7
+    RIGHT_STICK = 8
+    D_PAD_UP = 11
+    D_PAD_DOWN = 12
+    D_PAD_LEFT = 13
+    D_PAD_RIGHT = 14
+
+
+class AxisKeys(Enum):
+    LEFT_STICK_HORIZONTAL = 0
+    LEFT_STICK_VERTICAL = 1
+    LEFT_ANALOG_TRIGGER = 4
+    RIGHT_STICK_HORIZONTAL = 2
+    RIGHT_STICK_VERTICAL = 3
+    RIGHT_ANALOG_TRIGGER = 5
+
+
+# Button keys that are not assigned to any button on the controller
+VOID_BUTTONS = [5]
 
 
 @dataclass
-class XboxControllerButtonPressedState(ControllerButtonPressedState):
+class ButtonPressedState(ControllerButtonPressedState):
     A: bool
     B: bool
     X: bool
@@ -57,7 +83,7 @@ class XboxControllerButtonPressedState(ControllerButtonPressedState):
     RB: bool
     VIEW: bool
     MENU: bool
-    NA: bool
+    SHARE: bool
     LEFT_STICK: bool
     RIGHT_STICK: bool
 
@@ -65,7 +91,7 @@ class XboxControllerButtonPressedState(ControllerButtonPressedState):
         return [field.name for field in fields(self) if getattr(self, field.name)]
 
 
-class Xbox360PyGameJoystick(Controller):
+class XboxPyGameJoystick(Controller):
     """
     The controller works on two main principles
         - That the axes act like a stream of data and are constant
@@ -81,20 +107,35 @@ class Xbox360PyGameJoystick(Controller):
 
         name = self.joystick.get_name()
         LOGGER.info(f"detected joystick device: {name}")
-        if "360" not in name or "xbox" not in name.lower():
+
+        if sys.platform == "darwin":
+            LOGGER.info("Running on macOS")
+            if name != "Xbox Series X Controller":
+                raise ValueError(
+                    f"Xbox controller not detected. Controller detected was {name}"
+                )
+        elif sys.platform.startswith("linux"):
+            if "360" not in name or "xbox" not in name.lower():
+                raise ValueError(
+                    f"Xbox controller not detected. Controller detected was {name}"
+                )
+        else:
             raise ValueError(
                 f"Xbox controller not detected. Controller detected was {name}"
             )
 
-        self.axis_states = [0.0 for i in range(self.joystick.get_numaxes())]
-        self.button_states = [False for i in range(self.joystick.get_numbuttons())]
+        self.axis_states = [0.0] * self.joystick.get_numaxes()
+        self.button_states = [False] * self.joystick.get_numbuttons()
         self.axis_ids = {}
         self.button_ids = {}
         self.dead_zone = 0.07
         for i in range(self.joystick.get_numaxes()):
             self.axis_ids[i] = AxisKeys(i)
-        for i in range(self.joystick.get_numbuttons()):
-            self.button_ids[i] = XboxButtonKeys(i)
+        mapped_buttons = filter(
+            lambda x: x not in VOID_BUTTONS, range(self.joystick.get_numbuttons())
+        )
+        for i in mapped_buttons:
+            self.button_ids[i] = ButtonKeys(i)
 
     def get_state(self) -> ControllerState:
         self.pygame_connector.get_events()
@@ -138,35 +179,36 @@ class Xbox360PyGameJoystick(Controller):
             right_analog_trigger=right_analog_trigger,
         )
 
-        buttons = XboxControllerButtonPressedState(
-            A=self.joystick.get_button(XboxButtonKeys.A.value),
-            B=self.joystick.get_button(XboxButtonKeys.B.value),
-            X=self.joystick.get_button(XboxButtonKeys.X.value),
-            Y=self.joystick.get_button(XboxButtonKeys.Y.value),
-            LB=self.joystick.get_button(XboxButtonKeys.LB.value),
-            RB=self.joystick.get_button(XboxButtonKeys.RB.value),
-            VIEW=self.joystick.get_button(XboxButtonKeys.VIEW.value),
-            MENU=self.joystick.get_button(XboxButtonKeys.MENU.value),
-            NA=self.joystick.get_button(XboxButtonKeys.NA.value),
-            LEFT_STICK=self.joystick.get_button(XboxButtonKeys.LEFT_STICK.value),
-            RIGHT_STICK=self.joystick.get_button(XboxButtonKeys.RIGHT_STICK.value),
+        buttons = ButtonPressedState(
+            A=self.joystick.get_button(ButtonKeys.A.value),
+            B=self.joystick.get_button(ButtonKeys.B.value),
+            X=self.joystick.get_button(ButtonKeys.X.value),
+            Y=self.joystick.get_button(ButtonKeys.Y.value),
+            LB=self.joystick.get_button(ButtonKeys.LB.value),
+            RB=self.joystick.get_button(ButtonKeys.RB.value),
+            VIEW=self.joystick.get_button(ButtonKeys.VIEW.value),
+            MENU=self.joystick.get_button(ButtonKeys.MENU.value),
+            SHARE=self.joystick.get_button(ButtonKeys.NA.value),
+            LEFT_STICK=self.joystick.get_button(ButtonKeys.LEFT_STICK.value),
+            RIGHT_STICK=self.joystick.get_button(ButtonKeys.RIGHT_STICK.value),
         )
 
-        # Retrieve the state of the D-pad buttons
-        hat = self.joystick.get_hat(0)
+        right = self.joystick.get_button(ButtonKeys.D_PAD_RIGHT.value)
+        left = self.joystick.get_button(ButtonKeys.D_PAD_LEFT.value)
+        up = self.joystick.get_button(ButtonKeys.D_PAD_UP.value)
+        down = self.joystick.get_button(ButtonKeys.D_PAD_DOWN.value)
+
         d_pad_state = ControllerDPadState(
-            int(hat[DPadKeys.HORIZONTAL.value]),
-            int(hat[DPadKeys.VERTICAL.value]),
+            horizontal_right=1 if right else -1 if left else 0,
+            vertical_up=1 if up else -1 if down else 0,
         )
 
         pressed_button_ids = [
             button.value
-            for button in XboxButtonKeys
+            for button in ButtonKeys
             if self.joystick.get_button(button.value)
         ]
-        pressed_buttons = [
-            XboxButtonKeys(button_id) for button_id in pressed_button_ids
-        ]
+        pressed_buttons = [ButtonKeys(button_id) for button_id in pressed_button_ids]
 
         if LOGGER.getEffectiveLevel() == logging.DEBUG:
             LOGGER.debug(f"Axes: {axes}")
@@ -183,7 +225,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=log_level)
     LOGGER.setLevel(log_level)
     pygame_connector = PyGameConnector()
-    pygame_joystick = Xbox360PyGameJoystick(pygame_connector)
+    pygame_joystick = XboxPyGameJoystick(pygame_connector)
 
     while True:
         state = pygame_joystick.get_state()
