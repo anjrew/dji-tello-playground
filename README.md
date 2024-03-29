@@ -37,6 +37,8 @@ Replace <script_name> with the script you wish to run.
 
 There is also the [face tracking](./src/face_tracking) section with its own [readme](./src/face_tracking/README.md) on how to install the additional dependancies for those scripts.
 
+For using controllers with the drone see the [joysticks](./src/joysticks) section [README](./src/joysticks/README.md).
+
 ## Troubleshooting
 
 - See the drone status indicator states [here](./docs/drone_status_indicator_states.md)
