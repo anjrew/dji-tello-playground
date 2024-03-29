@@ -6,16 +6,20 @@ import logging
 import time
 import sys
 
-from joysticks.xbox_controller_mac import MacXboxPyGameJoystick
-from joysticks.xbox_controller_linux import LinuxXboxPyGameJoystick
 
 try:
+    from joysticks.xbox_controller_mac import MacXboxPyGameJoystick
+    from joysticks.xbox_controller_linux import LinuxXboxPyGameJoystick
+    from joysticks.xbox_controller_windows import WindowsXboxPyGameJoystick
     from joysticks.pygame_connector import PyGameConnector
     from joysticks.game_controller import (
         Controller,
         ControllerState,
     )
 except ModuleNotFoundError:
+    from xbox_controller_mac import MacXboxPyGameJoystick
+    from xbox_controller_linux import LinuxXboxPyGameJoystick
+    from xbox_controller_windows import WindowsXboxPyGameJoystick
     from pygame_connector import PyGameConnector
     from game_controller import (
         Controller,
@@ -23,7 +27,7 @@ except ModuleNotFoundError:
     )
 
 
-LOGGER = logging.getLogger(__name__)
+_LOGGER = logging.getLogger(__name__)
 
 
 class XboxPyGameController(Controller):
@@ -45,6 +49,10 @@ class XboxPyGameController(Controller):
             self.platform_controller = LinuxXboxPyGameJoystick(
                 pygame_connector, joystick_id
             )
+        elif sys.platform.startswith("win"):
+            self.platform_controller = WindowsXboxPyGameJoystick(
+                pygame_connector, joystick_id
+            )
         else:
             raise ValueError(
                 f"Unknown platform {sys.platform}. Cannot create XboxPyGameJoystick"
@@ -55,18 +63,30 @@ class XboxPyGameController(Controller):
 
 
 if __name__ == "__main__":
-    log_level = logging.DEBUG
+    import os
+
+    log_level = logging.INFO
     logging.basicConfig(level=log_level)
-    LOGGER.setLevel(log_level)
+    _LOGGER.setLevel(log_level)
     pygame_connector = PyGameConnector()
     pygame_joystick = XboxPyGameController(pygame_connector)
 
+    def print_state(state_dict: dict, indent=""):
+        for k, v in state_dict.items():
+            if isinstance(v, dict):
+                print(f"{indent}{k}:")
+                print_state(v, indent + "  ")
+            else:
+                print(f"{indent}{k}: {v}")
+
     while True:
+        os.system("cls" if os.name == "nt" else "clear")  # Clear the console
+        print("\033[1;1H")  # Move the cursor to the top-left corner
+
         state = pygame_joystick.get_state()
-        print("Current state")
+        print(f"Current state on platform {sys.platform} :")
         dict_state = state.to_dict()
 
-        for k, v in dict_state.items():
-            print(k, v)
+        print_state(dict_state)
 
         time.sleep(0.1)

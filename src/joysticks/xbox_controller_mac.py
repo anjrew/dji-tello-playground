@@ -222,18 +222,30 @@ class MacXboxPyGameJoystick(Controller):
 
 
 if __name__ == "__main__":
-    log_level = logging.DEBUG
+    import os
+
+    log_level = logging.INFO
     logging.basicConfig(level=log_level)
     _LOGGER.setLevel(log_level)
     pygame_connector = PyGameConnector()
     pygame_joystick = MacXboxPyGameJoystick(pygame_connector)
 
+    def print_state(state_dict: dict, indent=""):
+        for k, v in state_dict.items():
+            if isinstance(v, dict):
+                print(f"{indent}{k}:")
+                print_state(v, indent + "  ")
+            else:
+                print(f"{indent}{k}: {v}")
+
     while True:
+        os.system("cls" if os.name == "nt" else "clear")  # Clear the console
+        print("\033[1;1H")  # Move the cursor to the top-left corner
+
         state = pygame_joystick.get_state()
-        print("Current state")
+        print("Current state:")
         dict_state = state.to_dict()
 
-        for k, v in dict_state.items():
-            print(k, v)
+        print_state(dict_state)
 
         time.sleep(0.1)
