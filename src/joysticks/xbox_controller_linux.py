@@ -42,7 +42,7 @@ except ModuleNotFoundError:
 LOGGER = logging.getLogger(__name__)
 
 
-class XboxButtonKeys(Enum):
+class ButtonKeys(Enum):
     A = 0
     B = 1
     X = 2
@@ -70,36 +70,8 @@ class AxisKeys(Enum):
     RIGHT_ANALOG_TRIGGER = 5
 
 
-class XboxMacButtonKeys(Enum):
-    A = 0
-    B = 1
-    X = 2
-    Y = 3
-    LB = 4
-    RB = 5
-    VIEW = 6
-    MENU = 7
-    NA = 8
-    LEFT_STICK = 9
-    RIGHT_STICK = 10
-
-
-class MacDPadKeys(Enum):
-    HORIZONTAL = 0
-    VERTICAL = 1
-
-
-class MacAxisKeys(Enum):
-    LEFT_STICK_HORIZONTAL = 0
-    LEFT_STICK_VERTICAL = 1
-    LEFT_ANALOG_TRIGGER = 2
-    RIGHT_STICK_HORIZONTAL = 3
-    RIGHT_STICK_VERTICAL = 4
-    RIGHT_ANALOG_TRIGGER = 5
-
-
 @dataclass
-class XboxControllerButtonPressedState(ControllerButtonPressedState):
+class ButtonPressedState(ControllerButtonPressedState):
     A: bool
     B: bool
     X: bool
@@ -157,7 +129,7 @@ class XboxPyGameJoystick(Controller):
         for i in range(self.joystick.get_numaxes()):
             self.axis_ids[i] = AxisKeys(i)
         for i in range(self.joystick.get_numbuttons()):
-            self.button_ids[i] = XboxButtonKeys(i)
+            self.button_ids[i] = ButtonKeys(i)
 
     def get_state(self) -> ControllerState:
         self.pygame_connector.get_events()
@@ -201,18 +173,18 @@ class XboxPyGameJoystick(Controller):
             right_analog_trigger=right_analog_trigger,
         )
 
-        buttons = XboxControllerButtonPressedState(
-            A=self.joystick.get_button(XboxButtonKeys.A.value),
-            B=self.joystick.get_button(XboxButtonKeys.B.value),
-            X=self.joystick.get_button(XboxButtonKeys.X.value),
-            Y=self.joystick.get_button(XboxButtonKeys.Y.value),
-            LB=self.joystick.get_button(XboxButtonKeys.LB.value),
-            RB=self.joystick.get_button(XboxButtonKeys.RB.value),
-            VIEW=self.joystick.get_button(XboxButtonKeys.VIEW.value),
-            MENU=self.joystick.get_button(XboxButtonKeys.MENU.value),
-            NA=self.joystick.get_button(XboxButtonKeys.NA.value),
-            LEFT_STICK=self.joystick.get_button(XboxButtonKeys.LEFT_STICK.value),
-            RIGHT_STICK=self.joystick.get_button(XboxButtonKeys.RIGHT_STICK.value),
+        buttons = ButtonPressedState(
+            A=self.joystick.get_button(ButtonKeys.A.value),
+            B=self.joystick.get_button(ButtonKeys.B.value),
+            X=self.joystick.get_button(ButtonKeys.X.value),
+            Y=self.joystick.get_button(ButtonKeys.Y.value),
+            LB=self.joystick.get_button(ButtonKeys.LB.value),
+            RB=self.joystick.get_button(ButtonKeys.RB.value),
+            VIEW=self.joystick.get_button(ButtonKeys.VIEW.value),
+            MENU=self.joystick.get_button(ButtonKeys.MENU.value),
+            NA=self.joystick.get_button(ButtonKeys.NA.value),
+            LEFT_STICK=self.joystick.get_button(ButtonKeys.LEFT_STICK.value),
+            RIGHT_STICK=self.joystick.get_button(ButtonKeys.RIGHT_STICK.value),
         )
 
         # Retrieve the state of the D-pad buttons
@@ -224,12 +196,10 @@ class XboxPyGameJoystick(Controller):
 
         pressed_button_ids = [
             button.value
-            for button in XboxButtonKeys
+            for button in ButtonKeys
             if self.joystick.get_button(button.value)
         ]
-        pressed_buttons = [
-            XboxButtonKeys(button_id) for button_id in pressed_button_ids
-        ]
+        pressed_buttons = [ButtonKeys(button_id) for button_id in pressed_button_ids]
 
         if LOGGER.getEffectiveLevel() == logging.DEBUG:
             LOGGER.debug(f"Axes: {axes}")

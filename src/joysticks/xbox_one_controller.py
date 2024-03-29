@@ -21,24 +21,20 @@ from typing import List
 try:
     from joysticks.pygame_connector import PyGameConnector
     from joysticks.game_controller import (
-        AxisKeys,
         Controller,
         ControllerAxesState,
         ControllerDPadState,
         ControllerState,
-        DPadKeys,
         StickState,
         ControllerButtonPressedState,
     )
 except ModuleNotFoundError:
     from pygame_connector import PyGameConnector
     from game_controller import (
-        AxisKeys,
         Controller,
         ControllerAxesState,
         ControllerDPadState,
         ControllerState,
-        DPadKeys,
         StickState,
         ControllerButtonPressedState,
     )
@@ -47,6 +43,20 @@ except ModuleNotFoundError:
 LOGGER = logging.getLogger(__name__)
 
 from enum import Enum
+
+
+class DPadKeys(Enum):
+    HORIZONTAL = 0
+    VERTICAL = 1
+
+
+class AxisKeys(Enum):
+    LEFT_STICK_HORIZONTAL = 0
+    LEFT_STICK_VERTICAL = 1
+    LEFT_ANALOG_TRIGGER = 2
+    RIGHT_STICK_HORIZONTAL = 3
+    RIGHT_STICK_VERTICAL = 4
+    RIGHT_ANALOG_TRIGGER = 5
 
 
 class ButtonKeys(Enum):
