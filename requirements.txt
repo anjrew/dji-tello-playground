@@ -10,7 +10,6 @@ numpy==1.26.3
 
 # Main
 djitellopy==2.5.0
-face_recognition
 opencv-python==4.9.0.80
 pygame==2.5.2
 

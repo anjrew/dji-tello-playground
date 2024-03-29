@@ -1,5 +1,8 @@
 # Setting up the Environment
 
+See below the three different recommended ways for setting up your environment. 
+Some options suit some platforms better. For example the dev container option only works on Linux
+
 ## Option 1: Using a Virtual Python Environment
 
 ### Dependencies
