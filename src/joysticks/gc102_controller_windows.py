@@ -1,13 +1,5 @@
 """
-This module contains the implementation of a General "GC102 Wireless" controller that works with linux systems.
-https://www.amazon.de/-/en/gp/product/B07SDFLVKD/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&th=1
-.. image:: docs/images/xbox_pad.jpeg
-   :alt: General GC102 Wireless Controller
-   :width: 400px
-   :align: center
-It provides classes for handling the controller's axes, buttons, and D-pad state.
-The `Controller` abstract base class defines the interface for getting the current controller state.
-The `GC102PyGameJoystick` class is a concrete implementation of the `Controller` interface using the PyGame library.
+This module contains the implementation of a General "GC102 Wireless" controller that works with windows systems.
 """
 
 from dataclasses import dataclass, fields
