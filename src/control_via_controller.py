@@ -1,6 +1,5 @@
 import argparse
 import time
-from typing import Union
 from services.tello_command_dispatcher import TelloCommandDispatcher
 from services.tello_connector import TelloConnector
 from djitellopy import Tello
