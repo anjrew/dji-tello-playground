@@ -12,7 +12,7 @@ from services.tello_controller import (
 from test_utils import run_adapter_test
 
 
-class XboxTelloControlAdapter(TelloController):
+class XboxOneTelloControlAdapter(TelloController):
 
     def __init__(self, controller: XboxOnePyGameController):
         self.xbox_controller = controller
@@ -63,5 +63,5 @@ class XboxTelloControlAdapter(TelloController):
 if __name__ == "__main__":
     pygame_connector = PyGameConnector()
     controller = XboxOnePyGameController(pygame_connector)
-    tello_control = XboxTelloControlAdapter(controller)
+    tello_control = XboxOneTelloControlAdapter(controller)
     run_adapter_test(tello_control)

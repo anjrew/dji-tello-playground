@@ -42,6 +42,8 @@ For using controllers with the drone see the [joysticks](./src/joysticks) sectio
 ## Troubleshooting
 
 - See the drone status indicator states [here](./docs/drone_status_indicator_states.md)
+- There are some instances where the drones IMU may need to be calibrated. See the [calibration video guide]([./docs/calibrating_the_drone.md](https://youtu.be/ne5bofb7J9Y?si=JrDHTRJOB3Kxdrs4))
+- The firmware on the Tello drone may need to be updated. See the [firmware update video guide](https://youtu.be/zHYj1hzlH20?si=KWMkrB6HlDayjDrj)
 
 ## Debugging with Visual Studio Code
 

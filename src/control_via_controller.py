@@ -5,15 +5,24 @@ from services.tello_command_dispatcher import TelloCommandDispatcher
 from services.tello_connector import TelloConnector
 from djitellopy import Tello
 from joysticks.pygame_connector import PyGameConnector
+from services.tello_controller import TelloController
+from src.xbox_one_tello_adapter import XboxOneTelloControlAdapter
 from xbox_controller_tello_adapter import XboxTelloControlAdapter
-
-# from services.xbox_one_tello_control_adapter import XboxOneTelloControlAdapter
+from joysticks.xbox_one_controller import XboxOnePyGameController
 from joysticks.xbox_controller import XboxPyGameController
-from joysticks.xbox_one_controller_linux import LinuxXboxOnePyGameJoystick
+from keyboard_controller import KeyboardControlAdapter
 
 import logging
 
 LOGGER = logging.getLogger(__name__)
+
+from enum import Enum
+
+
+class _ControllerType(Enum):
+    XBOX360 = "xbox360"
+    KEYBOARD = "keyboard"
+    XBOXONE = "xboxone"
 
 
 def main(controller_type: str, cadence_secs: float, log_level: str) -> None:
@@ -22,16 +31,16 @@ def main(controller_type: str, cadence_secs: float, log_level: str) -> None:
 
     pygame_connector = PyGameConnector()
 
-    joystick: Union[XboxPyGameController, LinuxXboxOnePyGameJoystick]
-    controller: XboxTelloControlAdapter
-    # controller: Union[XboxTelloControlAdapter, XboxOneTelloControlAdapter]
+    controller: TelloController
 
-    if controller_type == "xbox360":
+    if controller_type == _ControllerType.XBOX360:
         joystick = XboxPyGameController(pygame_connector)
         controller = XboxTelloControlAdapter(joystick)
-    # elif controller_type == "xboxone":
-    #     joystick = XboxOnePyGameJoystick(pygame_connector)
-    #     controller = XboxOneTelloControlAdapter(joystick)
+    if controller_type == _ControllerType.KEYBOARD:
+        controller = KeyboardControlAdapter(pygame_connector)
+    elif controller_type == _ControllerType.XBOXONE:
+        joystick = XboxOnePyGameController(pygame_connector)
+        controller = XboxOneTelloControlAdapter(joystick)
     else:
         raise ValueError(f"Unsupported controller type: {controller_type}")
 
@@ -54,8 +63,8 @@ if __name__ == "__main__":
     args = argparse.ArgumentParser()
     args.add_argument(
         "--controller",
-        default="xbox360",
-        choices=["xbox360", "xboxone"],
+        default=_ControllerType.XBOX360,
+        choices=list(_ControllerType),
         help="Specify the controller type (default: xbox360)",
     )
     args.add_argument(
