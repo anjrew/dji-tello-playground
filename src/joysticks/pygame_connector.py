@@ -36,3 +36,9 @@ class PyGameConnector:
 
     def create_joystick(self, which_js: int) -> pygame.joystick.JoystickType:
         return pygame.joystick.Joystick(which_js)
+
+    def set_display(self, width: int, height: int) -> None:
+        pygame.display.set_mode((width, height))
+
+    def set_caption(self, caption: str) -> None:
+        pygame.display.set_caption(caption)

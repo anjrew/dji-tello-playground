@@ -9,10 +9,10 @@ The controllers and joysticks are supported on the following systems:
 | Controller      | Windows | Linux | macOS |
 |-----------------|---------|-------|-------|
 | Xbox 360        | ✅      | ✅    | ✅    |
-| Xbox One        | ✅      | ✅    | ❓    |
-| Logitech F710   | ✅      | ✅    | ❓    |
-| GC102           | ✅      | ❌    | ❓    |
-| TectInter       | ✅      | ❌    | ❓    |
+| Xbox One        | ✅      | ✅    | ❌    |
+| Logitech F710   | ✅      | ✅    | ❌    |
+| GC102           | ✅      | ❌    | ❌    |
+| TectInter       | ✅      | ❌    | ❌    |
 
 ### 🗂 Legend:
 
