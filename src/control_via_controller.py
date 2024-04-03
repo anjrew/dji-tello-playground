@@ -1,11 +1,12 @@
 import argparse
 import time
+from typing import Literal
 from services.tello_command_dispatcher import TelloCommandDispatcher
 from services.tello_connector import TelloConnector
 from djitellopy import Tello
 from joysticks.pygame_connector import PyGameConnector
 from services.tello_controller import TelloController
-from src.xbox_one_tello_adapter import XboxOneTelloControlAdapter
+from xbox_one_tello_adapter import XboxOneTelloControlAdapter
 from xbox_controller_tello_adapter import XboxTelloControlAdapter
 from joysticks.xbox_one_controller import XboxOnePyGameController
 from joysticks.xbox_controller import XboxPyGameController
@@ -24,18 +25,26 @@ class _ControllerType(Enum):
     XBOXONE = "xboxone"
 
 
-def main(controller_type: str, cadence_secs: float, log_level: str) -> None:
+def main(
+    ctrl_type: Literal[
+        "xbox360",
+        "keyboard",
+        "xboxone",
+    ],
+    cadence_secs: float,
+    log_level: str,
+) -> None:
     logging.basicConfig(level=log_level)
     LOGGER = logging.getLogger(__name__)
 
     pygame_connector = PyGameConnector()
 
     controller: TelloController
-
+    controller_type = _ControllerType[ctrl_type.upper()]
     if controller_type == _ControllerType.XBOX360:
         joystick = XboxPyGameController(pygame_connector)
         controller = XboxTelloControlAdapter(joystick)
-    if controller_type == _ControllerType.KEYBOARD:
+    elif controller_type == _ControllerType.KEYBOARD:
         controller = KeyboardControlAdapter(pygame_connector)
     elif controller_type == _ControllerType.XBOXONE:
         joystick = XboxOnePyGameController(pygame_connector)
