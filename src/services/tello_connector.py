@@ -83,6 +83,18 @@ class TelloConnector:
         """
         self.tello.set_speed(cm_s)
 
-    def end(self):
+    def end(self) -> None:
         LOGGER.debug("Ending Tello service")
         self.tello.end()
+
+    def flip_forward(self) -> None:
+        self.tello.flip_forward()
+
+    def flip_back(self) -> None:
+        self.tello.flip_back()
+
+    def flip_left(self) -> None:
+        self.tello.flip_left()
+
+    def flip_right(self) -> None:
+        self.tello.flip_right()

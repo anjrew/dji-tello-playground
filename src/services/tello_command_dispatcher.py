@@ -64,3 +64,11 @@ class TelloCommandDispatcher:
                 self.increase_speed()
             elif event == TelloActionType.DECREASE_SPEED_CM_S:
                 self.decrease_speed()
+            elif event == TelloActionType.FLIP_FORWARD:
+                self.tello.flip_forward()
+            elif event == TelloActionType.FLIP_BACK:
+                self.tello.flip_back()
+            elif event == TelloActionType.FLIP_RIGHT:
+                self.tello.flip_right()
+            elif event == TelloActionType.FLIP_LEFT:
+                self.tello.flip_left()
