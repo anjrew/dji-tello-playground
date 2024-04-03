@@ -1,9 +1,11 @@
 import logging
 import time
 
-from pygame_connector import PyGameConnector
+try:
+    from joysticks.pygame_connector import PyGameConnector
+except ModuleNotFoundError:
+    from pygame_connector import PyGameConnector
 
-logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 
@@ -21,24 +23,31 @@ class JoyStickTester:
         name = self.joystick.get_name()
         LOGGER.info(f"Detected joystick device: {name}")
 
-    def get_state(self) -> None:
+    def get_state(self) -> str:
         self.pygame_connector.get_events()
-
-        LOGGER.info(f"Reading out {self.joystick.get_name()} state {time.time()}")
+        state = f"Reading out {self.joystick.get_name()} state {time.time()}\n"
         for axis in range(self.joystick.get_numaxes()):
-            LOGGER.info(f"Axis {axis} value: {self.joystick.get_axis(axis)}")
+            state += f"Axis {axis} value: {self.joystick.get_axis(axis)}\n"
         for button in range(self.joystick.get_numbuttons()):
-            LOGGER.info(f"Button {button} value: {self.joystick.get_button(button)}")
+            state += f"Button {button} value: {self.joystick.get_button(button)}\n"
         for hat in range(self.joystick.get_numhats()):
-            LOGGER.info(f"Hat {hat} value: {self.joystick.get_hat(hat)}")
+            state += f"Hat {hat} value: {self.joystick.get_hat(hat)}\n"
+        return state
 
 
 if __name__ == "__main__":
+    import os
+
+    logging.basicConfig(level=logging.INFO)
+    LOGGER.setLevel("DEBUG")
+
     pygame_connector = PyGameConnector()
     joystick_tester = JoyStickTester(pygame_connector)
-    LOGGER.setLevel("DEBUG")
-    while True:
-        state = joystick_tester.get_state()
-        print("Current state")
 
+    while True:
+        os.system("cls" if os.name == "nt" else "clear")  # Clear the console
+        print("\033[1;1H")  # Move the cursor to the top-left corner
+        state = joystick_tester.get_state()
+        print("Current state:")
+        print(state)
         time.sleep(0.1)

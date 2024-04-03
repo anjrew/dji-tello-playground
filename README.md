@@ -1,8 +1,8 @@
-# DJI Tello Drone Playground
+# 🛸 DJI Tello Drone Playground
 
 Welcome to the DJI Tello Drone Playground! This project is designed for enthusiasts and learners who want to explore the capabilities of the DJI Tello drone through a series of practical exercises.
 
-# Getting Started
+# 🚀 Getting Started
 
 1. [Setup your development environment](./docs/setting_up_the_environment.md).
 2. [Connect](#setup-drone-connection) to the drone.
@@ -12,7 +12,7 @@ Welcome to the DJI Tello Drone Playground! This project is designed for enthusia
 6. Get creative and make your own scripts
 7. Have fun!
 
-## Setup Drone Connection
+## 📡 Setup Drone Connection
 
 To interact with the drone, you must first establish a WiFi connection:
 
@@ -23,7 +23,7 @@ To interact with the drone, you must first establish a WiFi connection:
 
     The WiFi network typically appears as `TELLO-XXXXXX`. Default password is usually `12345678`.
 
-## Exercises
+## 📝 Exercises
 
 Dive into various [example exercises](./src/examples) located in the `src` folder. Each script guides you through different functionalities of the DJI Tello drone.
 
@@ -35,15 +35,22 @@ python src/<script_name>.py
 
 Replace <script_name> with the script you wish to run.
 
+There is also the [face tracking](./src/face_tracking) section with its own [readme](./src/face_tracking/README.md) on how to install the additional dependencies for those scripts.
+
+For using controllers with the drone see the [joysticks](./src/joysticks) section [README](./src/joysticks/README.md).
+
 ## Troubleshooting
 
 - See the drone status indicator states [here](./docs/drone_status_indicator_states.md)
+- There are some instances where the drones IMU may need to be calibrated. See the [calibration video guide]([./docs/calibrating_the_drone.md](https://youtu.be/ne5bofb7J9Y?si=JrDHTRJOB3Kxdrs4))
+- The firmware on the Tello drone may need to be updated. See the [firmware update video guide](https://youtu.be/zHYj1hzlH20?si=KWMkrB6HlDayjDrj)
+- To position itself, the drone uses a downward-facing camera. Ensure the surface is well-lit and has distinct features for the drone to detect. Poor lighting or a lack of distinct patterns on the floor may cause the drone to drift or lose position.
 
-## Debugging with Visual Studio Code
+## 🐞 Debugging with Visual Studio Code
 
-To enhance your coding and debugging experience, we recommend using Visual Studio Code (VS Code). 
+To enhance your coding and debugging experience, we recommend using the launch configurations with Visual Studio Code (VS Code). 
 
-## Other Resources
+## 📚 Other Resources
 
 - [Official Docs](https://dl-cdn.ryzerobotics.com/downloads/tello/20180910/Tello%20SDK%20Documentation%20EN_1.3.pdf)
 - [Gamepad Control](https://github.com/cozmobotics/Tello-Swarm-Gamepad)

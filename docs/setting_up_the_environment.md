@@ -1,5 +1,8 @@
 # Setting up the Environment
 
+See below the three different recommended ways for setting up your environment. 
+Some options suit some platforms better. For example the dev container option only works on Linux
+
 ## Option 1: Using a Virtual Python Environment
 
 ### Dependencies
@@ -64,10 +67,9 @@ This will build and start the dev container, providing you with a ready-to-use d
 Conda is a powerful tool that allows for the management of packages, dependencies, and environments. Its use is not limited to Python projects, as it can manage packages from any language.
 
 ### Dependencies
-Before starting, ensure you have the following:
+Before starting, ensure you have installed [Miniconda](https://docs.anaconda.com/free/miniconda/index.html) or Anaconda
 
-[Miniconda](https://docs.anaconda.com/free/miniconda/index.html) or Anaconda
-1. Create a Conda Environment
+1. **Create a Conda Environment**
 Navigate to the project directory in your terminal and run the following command:
 
 ```bash
@@ -76,7 +78,7 @@ conda create --name myenv python=3.11
 
 Replace myenv with your desired environment name. This command creates a new Conda environment named myenv with Python 3.11. As a recommendation you could name the environment tellodrone.
 
-2. Activate the Conda Environment
+2. **Activate the Conda Environment**
 Activate the Conda environment by running:
 
 ```bash
@@ -84,7 +86,7 @@ conda activate myenv
 ```
 You'll notice the command prompt changes to indicate that the Conda environment is active.
 
-1. Install Dependencies
+3. **Install Dependencies**
 With the Conda environment activated, you can install project dependencies. If you have a requirements.txt file, you can use:
 
 ```bash

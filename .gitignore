@@ -7,3 +7,6 @@ __pycache__/
 *$py.class
 
 **.pt
+
+.DS_Store
+Icon
