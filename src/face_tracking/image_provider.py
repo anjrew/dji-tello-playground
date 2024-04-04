@@ -1,6 +1,10 @@
 import logging
 import cv2
-from open_cv_wrapper import OpenCvWrapper
+
+try:
+    from open_cv_wrapper import OpenCvWrapper
+except ModuleNotFoundError:
+    from face_tracking.open_cv_wrapper import OpenCvWrapper
 
 LOGGER = logging.getLogger(__name__)
 

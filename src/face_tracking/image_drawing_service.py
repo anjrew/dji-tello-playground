@@ -1,10 +1,11 @@
 from typing import Dict, Tuple, Union
-
 import cv2
-
 import numpy as np
 
-from open_cv_wrapper import OpenCvWrapper
+try:
+    from open_cv_wrapper import OpenCvWrapper
+except ModuleNotFoundError:
+    from face_tracking.open_cv_wrapper import OpenCvWrapper
 
 
 class ImageDrawingService:
