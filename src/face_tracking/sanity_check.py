@@ -30,7 +30,7 @@ LOGGER = logging.getLogger(__name__)
 
 # Variables
 ZERO_DEPTH_BOX_SIZE = 400
-DEPTH_TARGET = 700
+DEPTH_TARGET = 650
 
 open_cv = OpenCvWrapper()
 
@@ -50,21 +50,26 @@ while True:
         LOGGER.debug("No frame")
         continue
 
-    faces = face_identifier.identify_faces(frame)
-    if not faces:
+    faces_trbl = face_identifier.identify_faces(frame)
+    if not faces_trbl:
         LOGGER.debug("No faces")
         continue
 
     frame_center_xyz = (*get_frame_center_xy(frame), DEPTH_TARGET)
 
     closest = None
-    for face in faces:
-        box_center = get_box_center_xyz(face)
+    for face_trbl in faces_trbl:
+        box_center = get_box_center_xyz(face_trbl, DEPTH_TARGET)
         distance = get_distance_xyz(frame_center_xyz, box_center)
         if closest is None or distance < closest[1]:
-            closest = (face, distance, box_center)
-        frame = image_drawer.draw_box(frame, face, "green")
-        frame = image_drawer.draw_cross_hair_in_box(frame, face, 4, "green")
+            closest = (face_trbl, distance, box_center)
+        frame = image_drawer.draw_box(
+            frame,
+            face_trbl,
+            "green",
+            f"{box_center}",
+        )
+        frame = image_drawer.draw_cross_hair_in_box(frame, face_trbl, 4, "green")
 
     assert closest is not None
     closest_box = closest[0]
