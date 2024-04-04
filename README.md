@@ -4,13 +4,14 @@ Welcome to the DJI Tello Drone Playground! This project is designed for enthusia
 
 # 🚀 Getting Started
 
-1. [Setup your development environment](./docs/setting_up_the_environment.md).
-2. [Connect](#setup-drone-connection) to the drone.
-3. Try controlling the drone manually with your smartphone. See [this](./docs/manual_control_with_smartphone.md) guide
-4. See the [example exercises](./src/examples) in the [`src`](./src/) folder
-5. Try some of the other more advanced exercises in the [`src`](./src/) folder
-6. Get creative and make your own scripts
-7. Have fun!
+1. [Git clone](https://git-scm.com/docs/git-clone) or download this repository to your computer.
+2. [Setup your development environment](./docs/setting_up_the_environment.md).
+3. [Connect](#setup-drone-connection) to the drone.
+4. Try controlling the drone manually with your smartphone. See [this](./docs/manual_control_with_smartphone.md) guide
+5. See the [example exercises](./src/examples) in the [`src`](./src/) folder
+6. Try some of the other more advanced exercises in the [`src`](./src/) folder
+7. Get creative and make your own scripts
+8. Have fun!
 
 ## 📡 Setup Drone Connection
 
