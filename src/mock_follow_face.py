@@ -1,4 +1,7 @@
-"This Module is used to track a face in the frame and follow it with the drone."
+"""
+This Module is used to mock tracking a face in the frame and follow it with the drone.
+It outputs the controller outputs but does not dispatch them to a drone
+"""
 
 import time
 import cv2
@@ -6,7 +9,6 @@ from face_tracking.image_drawing_service import ImageDrawingService
 from face_tracking.image_compression_service import ImageCompressionService
 from face_tracking.recognition_face_identifier import RecognitionFaceIdentifier
 from face_tracking.open_cv_wrapper import OpenCvWrapper
-from djitellopy import Tello
 import logging
 import argparse
 from face_tracking.utils.positioning_utils import (
@@ -15,8 +17,6 @@ from face_tracking.utils.positioning_utils import (
     get_frame_center_xy,
     get_vector_xyz,
 )
-from services.tello_command_dispatcher import TelloCommandDispatcher
-from services.tello_connector import TelloConnector
 from follow_face_controller import FaceFollowingController
 
 
@@ -38,17 +38,7 @@ face_identifier = RecognitionFaceIdentifier(open_cv, image_compressor)
 
 image_drawer = ImageDrawingService(open_cv)
 
-
-# tello = Tello()
-# tello_service = TelloConnector(tello)
-# tello_service.connect()
-
-# tello_service.streamon()
-
-# dispatcher = TelloCommandDispatcher(tello_service)
-
 controller = FaceFollowingController()
-
 
 print("Starting flying in ...")
 for i in range(3, 0, -1):
@@ -61,10 +51,6 @@ cam = open_cv.connect_to_camera()
 
 while True:
     time.sleep(0.200)
-
-    # cam_output = tello.get_frame_read()
-
-    # frame = cam_output.frame
 
     ret, frame = cam.read()
 
@@ -130,12 +116,3 @@ while True:
 
     if open_cv.listen_for_key(1) & 0xFF == ord("q"):
         break
-
-tello_service.streamoff()
-
-LOGGER.info("Landing")
-# Land
-tello.land()
-
-# End the connection
-tello.end()

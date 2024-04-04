@@ -84,6 +84,7 @@ class TelloConnector:
         Arguments:
             x: 10-100
         """
+        assert 10 <= cm_s <= 100
         self.tello.set_speed(cm_s)
 
     def end(self) -> None:
