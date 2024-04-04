@@ -5,21 +5,18 @@ script_dir = os.path.dirname(__file__)
 parent_dir = os.path.join(script_dir, "..")
 sys.path.append(parent_dir)
 
-import argparse
-import time
-from typing import Callable, Dict, Literal
+from typing import Dict, Callable, Optional
 from services.tello_command_dispatcher import TelloCommandDispatcher
 from services.tello_connector import TelloConnector
 from djitellopy import Tello
 from joysticks.pygame_connector import PyGameConnector
-from joysticks.game_controller_type import GameControllerType
-from joysticks.xbox_one_controller import XboxOnePyGameController
-from joysticks.xbox_controller import XboxPyGameController
 from services.tello_controller import TelloController
 from xbox_one_tello_adapter import XboxOneTelloControlAdapter
 from xbox_controller_tello_adapter import XboxTelloControlAdapter
+from joysticks.xbox_one_controller import XboxOnePyGameController
+from joysticks.xbox_controller import XboxPyGameController
+from joysticks.game_controller_type import GameControllerType
 from keyboard_controller import KeyboardControlAdapter
-
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -37,27 +34,46 @@ controller_mapping: Dict[
 }
 
 
+def get_controller_type(platform: str, joystick_name: str) -> GameControllerType:
+    mapping = {
+        # Linux
+        "linux": {},
+        # MAC
+        "darwin": {"Xbox Series X Controller": GameControllerType.XBOX360},
+        # Windows
+        "win": {},
+    }
+    try:
+        return mapping[platform][joystick_name]
+    except KeyError:
+        raise ValueError(
+            f"No Controller type mapping found for platform {platform} and joystick name {joystick_name}"
+        )
+
+
 def main(
-    ctrl_type: Literal[
-        "xbox360",
-        "keyboard",
-        "xboxone",
-    ],
-    cadence_secs: float,
-    log_level: str,
+    log_level: int = logging.DEBUG,
 ) -> None:
     logging.basicConfig(level=log_level)
     LOGGER = logging.getLogger(__name__)
 
-    pygame_connector = PyGameConnector()
-
-    controller: TelloController
-
+    controller: Optional[TelloController] = None
     try:
-        controller_type = GameControllerType[ctrl_type.upper()]
+
+        pygame_connector = PyGameConnector()
+        pygame_connector.init_joystick()
+        joystick = pygame_connector.create_joystick(0)
+        joystick.init()
+
+        name = joystick.get_name()
+        platform = sys.platform
+
+        controller_type = get_controller_type(platform, name)
         controller = controller_mapping[controller_type](pygame_connector)
-    except KeyError:
-        raise ValueError(f"Unsupported controller type: {ctrl_type}")
+    except (KeyError, ValueError) as e:
+        LOGGER.error(f"Error detecting controller: {e}")
+        LOGGER.info("Defaulting to Keyboard Controller")
+        controller = KeyboardControlAdapter(PyGameConnector())
 
     tello = Tello()
     tello_service = TelloConnector(tello)
@@ -66,7 +82,6 @@ def main(
     dispatcher = TelloCommandDispatcher(tello_service)
 
     while True:
-        time.sleep(cadence_secs)
         try:
             control_state = controller.get_state()
             dispatcher.send_commands(control_state)
@@ -75,24 +90,4 @@ def main(
 
 
 if __name__ == "__main__":
-    args = argparse.ArgumentParser()
-    args.add_argument(
-        "--controller",
-        default=GameControllerType.XBOX360,
-        choices=list(GameControllerType),
-        help="Specify the controller type (default: xbox360)",
-    )
-    args.add_argument(
-        "--cadence",
-        type=float,
-        default=0.1,
-        help="Specify the cadence in seconds (default: 0.1)",
-    )
-    args.add_argument(
-        "--log-level",
-        default="INFO",
-        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-        help="Specify the log level (default: INFO)",
-    )
-    parsed_args = args.parse_args()
-    main(parsed_args.controller, parsed_args.cadence, parsed_args.log_level)
+    main()
