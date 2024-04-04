@@ -1,5 +1,11 @@
-from typing import List
+import sys
+import os
 
+script_dir = os.path.dirname(__file__)
+parent_dir = os.path.join(script_dir, "..")
+sys.path.append(parent_dir)
+
+from typing import List
 from src.joysticks.logitech_f710_controller import LogitechF710Joystick
 from services.tello_controller import (
     TelloActionType,

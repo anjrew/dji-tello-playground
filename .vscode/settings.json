@@ -27,6 +27,7 @@
         "JSIOCGNAME",
         "numhats",
         "Tect",
+        "tectinter",
         "Tello",
         "tellodrone",
         "yolov",

@@ -1,3 +1,10 @@
+import sys
+import os
+
+script_dir = os.path.dirname(__file__)
+parent_dir = os.path.join(script_dir, "..")
+sys.path.append(parent_dir)
+
 from typing import List
 
 from joysticks.tectinter_controller_windows import TectInterJoystick

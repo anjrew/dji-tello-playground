@@ -1,8 +1,13 @@
+import sys
+import os
+
+script_dir = os.path.dirname(__file__)
+parent_dir = os.path.join(script_dir, "..")
+sys.path.append(parent_dir)
+
 import logging
 from typing import Callable, Dict, List
-
 from joysticks.pygame_connector import PyGameConnector
-
 import pygame
 from services.tello_controller import (
     TelloActionType,
