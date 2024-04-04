@@ -35,25 +35,32 @@ def get_box_center_xy(
 
 
 def get_box_center_xyz(
-    box: Union[cv2.typing.Rect, Tuple[int, int, int, int]]
+    box: Union[cv2.typing.Rect, Tuple[int, int, int, int]], depth_target: int
 ) -> Tuple[int, int, int]:
     """
     Calculates the center coordinates and depth of a bounding box.
 
     Args:
         box (Union[Tuple[int, int, int, int], cv2.typing.Rect]):
-            A tuple representing the coordinates of the bounding box in the format (x, y, width, height).
+            A tuple representing the coordinates of the bounding box in the format (top, right, bottom, left).
+        depth_target (int):
+            The target depth value used to calculate the depth of the bounding box.
 
     Returns:
         Tuple[int, int, int]: A tuple representing the center coordinates of the bounding box in the format (x, y, z),
-                               where z is a simple estimation of depth based on the box size.
+        where z is the estimated depth based on the box size and the target depth value.
     """
-    x, y, width, height = box
-    center_x = x + width // 2
-    center_y = y + height // 2
+    top, right, bottom, left = box
+
+    center_x = (left + right) // 2
+    center_y = (top + bottom) // 2
+
     # Simple depth estimation based on the average of width and height
-    depth = (width + height) // 2
-    return center_x, center_y, depth
+    width = right - left
+    height = bottom - top
+    box_size = (width + height) // 2
+
+    return center_x, center_y, depth_target - box_size
 
 
 def get_distance_xy(point1: Tuple[int, int], point2: Tuple[int, int]) -> float:

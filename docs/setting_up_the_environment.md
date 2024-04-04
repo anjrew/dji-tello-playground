@@ -3,13 +3,31 @@
 See below the three different recommended ways for setting up your environment. 
 Some options suit some platforms better. For example the dev container option only works on Linux
 
+# Code Editor Setup
+
+You can use any code editor you like but we recommend using [Visual Studio Code](https://code.visualstudio.com/) as your code editor. It is a lightweight, open-source code editor with a wide range of features and extensions that make it a popular choice among developers.
+
+You can download Visual Studio Code from [this link](https://code.visualstudio.com/)
+
+# Python Environment Setup
+
+
 ## Option 1: Using a Virtual Python Environment
 
 ### Dependencies
 
-Before starting, ensure you have the following:
+Before starting, ensure you have Python 3.11 higher.
 
-- [Python 3.11](https://www.python.org/downloads/release/python-3115/) or newer
+You can download from [here for Windows](https://apps.microsoft.com/detail/9nrwmjp3717k?hl=en-US&gl=US) version or the official site [here](https://www.python.org/downloads/release/python-3115/) for other platforms.
+
+Make sure the python path is added to the system environment variables. You can check this by running the following command in your terminal:
+
+```bash
+python --version
+``` 
+
+If no version is displayed, you may need to add the Python path to the system environment variables. Follow this guide on how to do this on [Windows](https://medium.com/@viknesh2798/how-to-fix-the-issues-while-using-python-command-in-the-command-prompt-ba56d9018c5f)
+
 
 ### 1. Create a Virtual Environment
    

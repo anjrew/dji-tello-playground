@@ -55,7 +55,10 @@ class TelloCommandDispatcher:
         # Process events
         for event in control_state.events:
             if event == TelloActionType.TAKEOFF:
-                self.tello.take_off()
+                if not self.tello.is_flying():
+                    self.tello.take_off()
+                else:
+                    LOGGER.info("Drone is already flying")
             elif event == TelloActionType.LAND:
                 self.tello.land()
             elif event == TelloActionType.EMERGENCY_LAND:

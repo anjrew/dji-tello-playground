@@ -1,3 +1,10 @@
+import sys
+import os
+
+script_dir = os.path.dirname(__file__)
+parent_dir = os.path.join(script_dir, "..")
+sys.path.append(parent_dir)
+
 import argparse
 import time
 import logging
@@ -5,7 +12,7 @@ from services.tello_command_dispatcher import TelloCommandDispatcher
 from services.tello_connector import TelloConnector
 from xbox_controller_tello_adapter import XboxTelloControlAdapter
 from joysticks.pygame_connector import PyGameConnector
-from joysticks.xbox_controller_linux import XboxPyGameJoystick
+from joysticks.xbox_controller import XboxPyGameController
 from djitellopy import Tello
 
 args = argparse.ArgumentParser()
@@ -20,7 +27,7 @@ CADENCE_SECS = 0.1
 def main():
 
     pygame_connector = PyGameConnector()
-    joystick = XboxPyGameJoystick(pygame_connector)
+    joystick = XboxPyGameController(pygame_connector)
     controller = XboxTelloControlAdapter(joystick)
     tello = Tello()
     tello_service = TelloConnector(tello)

@@ -1,8 +1,13 @@
+import sys
+import os
+
+script_dir = os.path.dirname(__file__)
+parent_dir = os.path.join(script_dir, "..")
+sys.path.append(parent_dir)
+
 from typing import List
 
 from joysticks.gc102_controller import GC102PyGameController
-
-
 from joysticks.pygame_connector import PyGameConnector
 from services.tello_controller import (
     TelloActionType,

@@ -1,30 +1,28 @@
 """
-This script is used as a Sanity check abd performs face tracking using a camera feed.
-It identifies faces in each frame, calculates the distance between the center of the frame
-and each face, and selects the closest face.
-It then draws a box around the closest face and displays the frame with the box.
-The script continues to track faces until the user presses 'q' to quit.
-
-A Camera must be connected to the system to run this script properly.
+This Module is used to mock tracking a face in the frame and follow it with the drone.
+It outputs the controller outputs but does not dispatch them to a drone
 """
 
-from image_drawing_service import ImageDrawingService
-from image_compression_service import ImageCompressionService
-from recognition_face_identifier import RecognitionFaceIdentifier
-from open_cv_wrapper import OpenCvWrapper
+import time
+import cv2
+from face_tracking.image_drawing_service import ImageDrawingService
+from face_tracking.image_compression_service import ImageCompressionService
+from face_tracking.recognition_face_identifier import RecognitionFaceIdentifier
+from face_tracking.open_cv_wrapper import OpenCvWrapper
 import logging
 import argparse
-from utils.positioning_utils import (
+from face_tracking.utils.positioning_utils import (
     get_box_center_xyz,
     get_distance_xyz,
     get_frame_center_xy,
     get_vector_xyz,
 )
+from follow_face_controller import FaceFollowingController
 
 
 args = argparse.ArgumentParser()
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -40,13 +38,23 @@ face_identifier = RecognitionFaceIdentifier(open_cv, image_compressor)
 
 image_drawer = ImageDrawingService(open_cv)
 
+controller = FaceFollowingController()
+
+print("Starting flying in ...")
+for i in range(3, 0, -1):
+    print(i)
+    time.sleep(1)
+
+# tello.takeoff()
 cam = open_cv.connect_to_camera()
 
-LOGGER.debug("Starting face tracking")
 
 while True:
+    time.sleep(0.200)
+
     ret, frame = cam.read()
-    if not ret:
+
+    if frame is None or frame.size == 0 or frame.shape[0] == 0 or frame.shape[1] == 0:
         LOGGER.debug("No frame")
         continue
 
@@ -67,7 +75,6 @@ while True:
             frame,
             face_trbl,
             "green",
-            f"{box_center}",
         )
         frame = image_drawer.draw_cross_hair_in_box(frame, face_trbl, 4, "green")
 
@@ -85,8 +92,27 @@ while True:
         f"Closest face at {frame_center_xyz, closest_center} with distance {closest_distance}"
     )
 
-    LOGGER.debug(f"Drone movement {vector_to_center} to center the face in the frame.")
+    control_state = controller.get_state(vector_to_center)
+    height, width = frame.shape[:2]
+    bottom = height - 10
+    left = 10
 
+    # Write the control state information on the frame
+    open_cv.write_text(
+        frame,
+        f"Forward: {control_state.forward_velocity},"
+        f"Move Right: {control_state.right_velocity}, "
+        f"Up: {control_state.up_velocity}, "
+        f"Yaw Right: {control_state.yaw_right_velocity}",
+        (left, bottom),
+        cv2.FONT_HERSHEY_DUPLEX,
+        0.5,  # Adjust the font scale as needed
+        (255, 255, 255),
+        1,
+    )
     open_cv.show_image("frame", frame)
+
+    # dispatcher.send_commands(control_state)
+
     if open_cv.listen_for_key(1) & 0xFF == ord("q"):
         break

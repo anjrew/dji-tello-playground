@@ -1,8 +1,13 @@
 from typing import Sequence
 
 import cv2
-from face_identifier import AbstractFaceIdentifier
-from open_cv_wrapper import OpenCvWrapper
+
+try:
+    from open_cv_wrapper import OpenCvWrapper
+    from face_identifier import AbstractFaceIdentifier
+except ModuleNotFoundError:
+    from face_tracking.open_cv_wrapper import OpenCvWrapper
+    from face_tracking.face_identifier import AbstractFaceIdentifier
 
 
 class OpenCvFaceIdentifier(AbstractFaceIdentifier):

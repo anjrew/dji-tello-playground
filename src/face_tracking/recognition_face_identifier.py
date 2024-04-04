@@ -2,9 +2,16 @@ from typing import Literal, Sequence
 import face_recognition  # type ignore
 
 import cv2
-from face_identifier import AbstractFaceIdentifier
-from image_compression_service import ImageCompressionService
-from open_cv_wrapper import OpenCvWrapper
+
+try:
+    from open_cv_wrapper import OpenCvWrapper
+    from face_identifier import AbstractFaceIdentifier
+    from image_compression_service import ImageCompressionService
+
+except ModuleNotFoundError:
+    from face_tracking.open_cv_wrapper import OpenCvWrapper
+    from face_tracking.face_identifier import AbstractFaceIdentifier
+    from face_tracking.image_compression_service import ImageCompressionService
 
 
 class RecognitionFaceIdentifier(AbstractFaceIdentifier):

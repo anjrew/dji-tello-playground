@@ -55,6 +55,9 @@ class TelloConnector:
         LOGGER.info("Taking off...")
         self.tello.takeoff()
 
+    def is_flying(self) -> bool:
+        return self.tello.is_flying
+
     def land(self):
         LOGGER.info("Landing...")
         self.tello.land()
@@ -81,6 +84,7 @@ class TelloConnector:
         Arguments:
             x: 10-100
         """
+        assert 10 <= cm_s <= 100
         self.tello.set_speed(cm_s)
 
     def end(self) -> None:
