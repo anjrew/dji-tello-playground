@@ -16,7 +16,7 @@ class FaceFollowingController:
     def get_state(self, movement_vector_xyz: Tuple) -> TelloControlState:
         """Gets the current controller state of the drone."""
         max_x, max_y, max_z = movement_vector_xyz
-
+        max_z = max_z / 10
         max_value = max(abs(max_x), abs(max_y), abs(max_z))
 
         normalized_x = self.normalize_velocity(max_x, max_value)
@@ -25,8 +25,8 @@ class FaceFollowingController:
 
         return TelloControlState(
             events=[],
-            forward_velocity=normalized_x,
+            forward_velocity=normalized_z,
             right_velocity=0,  # Set right_velocity to 0
-            up_velocity=normalized_z,
-            yaw_right_velocity=normalized_y,  # Map max_y to yaw_right_velocity
+            up_velocity=-normalized_y,
+            yaw_right_velocity=normalized_x,
         )

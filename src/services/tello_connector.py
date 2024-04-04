@@ -55,6 +55,9 @@ class TelloConnector:
         LOGGER.info("Taking off...")
         self.tello.takeoff()
 
+    def is_flying(self) -> bool:
+        return self.tello.is_flying
+
     def land(self):
         LOGGER.info("Landing...")
         self.tello.land()
