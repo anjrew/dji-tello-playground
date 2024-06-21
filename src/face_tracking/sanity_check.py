@@ -32,12 +32,13 @@ LOGGER = logging.getLogger(__name__)
 ZERO_DEPTH_BOX_SIZE = 400
 DEPTH_TARGET = 650
 
+
 open_cv = OpenCvWrapper()
 
 image_compressor = ImageCompressionService(open_cv)
 
 face_identifier = RecognitionFaceIdentifier(open_cv, image_compressor)
-
+print(face_identifier)
 image_drawer = ImageDrawingService(open_cv)
 
 cam = open_cv.connect_to_camera()
@@ -90,3 +91,5 @@ while True:
     open_cv.show_image("frame", frame)
     if open_cv.listen_for_key(1) & 0xFF == ord("q"):
         break
+
+cam.release()
