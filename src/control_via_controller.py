@@ -1,3 +1,6 @@
+"""
+
+"""
 import sys
 import os
 
@@ -79,7 +82,7 @@ if __name__ == "__main__":
     args.add_argument(
         "--controller",
         default=GameControllerType.XBOX360,
-        choices=list(GameControllerType),
+        choices=list([x.name.lower() for x in GameControllerType]),
         help="Specify the controller type (default: xbox360)",
     )
     args.add_argument(
