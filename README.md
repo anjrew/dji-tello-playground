@@ -58,3 +58,4 @@ To enhance your coding and debugging experience, we recommend using the launch c
 - [Basic Simulator](https://github.com/Fireline-Science/tello_sim)
 - [Advanced Simulator](https://dev.droneblocks.io/simulator.html)
 - [YolovV8 Inference Container](https://github.com/anjrew/yolo-v8-inference-container/tree/main?tab=readme-ov-file)
+- [Tello Pilots Forum](https://tellopilots.com/)

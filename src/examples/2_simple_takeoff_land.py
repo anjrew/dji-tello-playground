@@ -5,6 +5,8 @@ import time
 # Create a Tello instance
 tello = Tello()
 
+print("Attempting to connect to drone ...")
+
 # Connect to Tello
 tello.connect()
 
