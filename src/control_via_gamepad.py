@@ -1,9 +1,18 @@
+"""
+This module initializes a connection to a Tello drone and sets up a control interface
+using a game controller or keyboard input. The script can auto-detect the controller 
+when the 'auto' mode is specified or use a specific controller type provided as an 
+argument. It continuously polls the controller's state and dispatches commands to the drone 
+at a configurable cadence. Logging is configured via command-line arguments to facilitate 
+debugging and monitoring.
+"""
+
 import sys
 import os
 import time
 import argparse
 import logging
-from typing import Dict, Callable, Optional, Literal
+from typing import Dict, Callable, Literal
 
 # Ensure parent directory is in sys.path
 script_dir = os.path.dirname(__file__)
@@ -25,7 +34,7 @@ from src.controller_adapters.keyboard_controller import KeyboardControlAdapter
 LOGGER = logging.getLogger(__name__)
 
 # Mapping from GameControllerType to its adapter factory
-controller_mapping: Dict[
+_CONTROLLER_ID_CLASS_MAPPING: Dict[
     GameControllerType, Callable[[PyGameConnector], TelloController]
 ] = {
     GameControllerType.XBOX360: lambda connector: XboxTelloControlAdapter(
@@ -51,21 +60,21 @@ def get_controller_type(platform: str, joystick_name: str) -> GameControllerType
             f"No controller mapping found for platform {platform} and joystick '{joystick_name}'"
         )
 
-def main(
-    controller_arg: Literal["xbox360", "keyboard", "xboxone", "auto"],
-    cadence_secs: float,
-    log_level: str,
-) -> None:
-    logging.basicConfig(level=log_level)
+
+def get_tello_control(controller_arg: str) -> TelloController:
+    """
+    Get the TelloController instance based on the controller_arg.
+    If controller_arg is 'auto', the controller will be auto-detected.
+    """
     pygame_connector = PyGameConnector()
-    
-    # Decide which mode to use: manual (argument provided) or auto-detection
     if controller_arg.lower() != "auto":
         try:
             controller_type = GameControllerType[controller_arg.upper()]
-            controller = controller_mapping[controller_type](pygame_connector)
+            tello_controller_adapter = _CONTROLLER_ID_CLASS_MAPPING[controller_type](pygame_connector)
         except KeyError:
             raise ValueError(f"Unsupported controller type for auto detection: {controller_arg}")
+    elif controller_arg.lower() == "keyboard":
+        tello_controller_adapter = KeyboardControlAdapter(pygame_connector)
     else:
         # Auto-detect controller via joystick initialization
         try:
@@ -75,26 +84,46 @@ def main(
             joystick_name = joystick.get_name()
             platform_str = sys.platform
             controller_type = get_controller_type(platform_str, joystick_name)
-            controller = controller_mapping[controller_type](pygame_connector)
+            tello_controller_adapter = _CONTROLLER_ID_CLASS_MAPPING[controller_type](pygame_connector)
         except (KeyError, ValueError) as e:
             LOGGER.error("Error detecting controller: %s", e)
             LOGGER.info("Defaulting to Keyboard Controller")
-            controller = KeyboardControlAdapter(pygame_connector)
-    
-    # Connect to the Tello drone
+            tello_controller_adapter = KeyboardControlAdapter(pygame_connector)
+    return tello_controller_adapter
+
+
+def get_command_dispatcher() -> TelloCommandDispatcher:
+    """
+    Creates and connects to the Tello drone and returns a instance used for dispatching commands to the tello.
+    """
     tello = Tello()
-    tello_service = TelloConnector(tello)
-    tello_service.connect()
-    dispatcher = TelloCommandDispatcher(tello_service)
+    tello_connector = TelloConnector(tello)
+    tello_connector.connect()
+    command_dispatcher = TelloCommandDispatcher(tello_connector)
+    return command_dispatcher
+
+def main(
+    controller_arg: Literal["xbox360", "keyboard", "xboxone", "auto"],
+    cadence_secs: float,
+    log_level: str,
+) -> None:
+    logging.basicConfig(level=log_level)
+
+    # Connecto to the controller
+    tello_controller = get_tello_control(controller_arg)
+    # Connect to the Tello drone
+    command_dispatcher = get_command_dispatcher()
     
     # Main loop: get control state and dispatch commands at the specified cadence
     while True:
         time.sleep(cadence_secs)
         try:
-            control_state = controller.get_state()
-            dispatcher.send_commands(control_state)
+            control_state = tello_controller.get_state()
+            command_dispatcher.send_commands(control_state)
         except Exception as e:
             LOGGER.error("Error issuing command: %s", e)
+
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

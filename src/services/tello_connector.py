@@ -7,21 +7,7 @@ LOGGER = logging.getLogger(__name__)
 
 class TelloConnector:
     """
-    A class that provides a high-level interface for controlling the Tello drone.
-
-    Attributes:
-        tello: An instance of the Tello class for low-level communication with the drone.
-
-    Methods:
-        connect: Establishes a connection with the Tello drone.
-        set_speed: Sets the speed of the Tello drone.
-        streamoff: Stops the video stream from the Tello drone.
-        streamon: Starts the video stream from the Tello drone.
-        get_frame_read: Returns an instance of BackgroundFrameRead for reading frames from the video stream.
-        takeoff: Initiates the takeoff sequence of the Tello drone.
-        land: Initiates the landing sequence of the Tello drone.
-        send_rc_control: Sends RC control commands to the Tello drone for manual control.
-        end: Closes the connection with the Tello drone.
+    A wrapper class around the Tello SDK that provides a interface for controlling the Tello drone.
     """
 
     def __init__(self, tello: Tello):
