@@ -8,7 +8,7 @@ Welcome to the DJI Tello Drone Playground! This project is designed for enthusia
 2. [Setup your development environment](./docs/setting_up_the_environment.md).
 3. [Connect](#setup-drone-connection) to the drone.
 4. Try controlling the drone manually with your smartphone. See [this](./docs/manual_control_with_smartphone.md) guide
-5. See the [example exercises](./src/examples) in the [`src`](./src/) folder
+5. See the [example exercises](./src/example_exercises) in the [`src`](./src/) folder
 6. Try some of the other more advanced exercises in the [`src`](./src/) folder
 7. Get creative and make your own scripts
 8. Have fun!
@@ -26,7 +26,7 @@ To interact with the drone, you must first establish a WiFi connection:
 
 ## 📝 Exercises
 
-Dive into various [example exercises](./src/examples) located in the `src` folder. Each script guides you through different functionalities of the DJI Tello drone.
+Dive into various [example exercises](./src/example_exercises) located in the `src` folder. Each script guides you through different functionalities of the DJI Tello drone.
 
 To run an exercise, navigate to the [`src`](./src/)  folder and execute the corresponding script:
 
