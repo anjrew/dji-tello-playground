@@ -19,17 +19,18 @@ script_dir = os.path.dirname(__file__)
 parent_dir = os.path.join(script_dir, "..")
 sys.path.append(parent_dir)
 
+from djitellopy import Tello
+
 from services.tello_command_dispatcher import TelloCommandDispatcher
 from services.tello_connector import TelloConnector
-from djitellopy import Tello
 from joysticks.pygame_connector import PyGameConnector
 from joysticks.game_controller_type import GameControllerType
 from joysticks.xbox_one_controller import XboxOnePyGameController
 from joysticks.xbox_controller import XboxPyGameController
 from services.tello_controller import TelloController
+from controller_adapters.keyboard_controller import KeyboardControlAdapter
 from controller_adapters.xbox_one_tello_adapter import XboxOneTelloControlAdapter
 from controller_adapters.xbox_controller_tello_adapter import XboxTelloControlAdapter
-from src.controller_adapters.keyboard_controller import KeyboardControlAdapter
 
 LOGGER = logging.getLogger(__name__)
 

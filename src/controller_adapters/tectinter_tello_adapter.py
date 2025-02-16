@@ -15,7 +15,7 @@ from services.tello_controller import (
     TelloController,
 )
 from joysticks.pygame_connector import PyGameConnector
-from utils import run_adapter_test
+from .utils import run_adapter_test
 
 
 class TectInterJoystickControlAdapter(TelloController):

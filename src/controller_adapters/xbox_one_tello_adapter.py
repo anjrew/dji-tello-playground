@@ -14,7 +14,7 @@ from services.tello_controller import (
     TelloController,
 )
 
-from utils import run_adapter_test
+from .utils import run_adapter_test
 
 
 class XboxOneTelloControlAdapter(TelloController):
