@@ -7,19 +7,19 @@ sys.path.append(parent_dir)
 
 from typing import List
 from joysticks.pygame_connector import PyGameConnector
-from joysticks.xbox_controller import XboxPyGameController
-
+from joysticks.xbox_one_controller import XboxOnePyGameController
 from services.tello_controller import (
     TelloActionType,
     TelloControlState,
     TelloController,
 )
-from test_utils import run_adapter_test
+
+from utils import run_adapter_test
 
 
-class XboxTelloControlAdapter(TelloController):
+class XboxOneTelloControlAdapter(TelloController):
 
-    def __init__(self, controller: XboxPyGameController):
+    def __init__(self, controller: XboxOnePyGameController):
         self.xbox_controller = controller
 
     def t(self, controller_axis_value: float) -> int:
@@ -67,6 +67,6 @@ class XboxTelloControlAdapter(TelloController):
 
 if __name__ == "__main__":
     pygame_connector = PyGameConnector()
-    controller = XboxPyGameController(pygame_connector)
-    tello_control = XboxTelloControlAdapter(controller)
+    controller = XboxOnePyGameController(pygame_connector)
+    tello_control = XboxOneTelloControlAdapter(controller)
     run_adapter_test(tello_control)
