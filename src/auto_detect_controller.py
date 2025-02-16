@@ -11,8 +11,8 @@ from services.tello_connector import TelloConnector
 from djitellopy import Tello
 from joysticks.pygame_connector import PyGameConnector
 from services.tello_controller import TelloController
-from xbox_one_tello_adapter import XboxOneTelloControlAdapter
-from xbox_controller_tello_adapter import XboxTelloControlAdapter
+from tello_adapters.xbox_one_tello_adapter import XboxOneTelloControlAdapter
+from tello_adapters.xbox_controller_tello_adapter import XboxTelloControlAdapter
 from joysticks.xbox_one_controller import XboxOnePyGameController
 from joysticks.xbox_controller import XboxPyGameController
 from joysticks.game_controller_type import GameControllerType
