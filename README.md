@@ -24,6 +24,29 @@ To interact with the drone, you must first establish a WiFi connection:
 
     The WiFi network typically appears as `TELLO-XXXXXX`. Default password is usually `12345678`.
 
+## 📂 Folder Structure
+
+The `src` folder contains the core modules and components of the project. Below is an overview of each subfolder and file:
+
+- **[`example_exercises/`](./src/example_exercises/README.md)**  
+  Provides sample scripts and exercises that demonstrate how to use the various components of the repository. These examples can serve as learning resources or starting points for new features.
+
+- **[`controller_adapters/`](./src/controller_adapters/README.md)**  
+  Contains modules that act as adapters between various input devices (e.g., joysticks, keyboards) and the Tello drone control logic. These adapters standardize control inputs so the drone can interpret commands regardless of the input source. The files contain classes to be used in other scripts but not executed directly.
+
+- **[`face_tracking/`](./src/face_tracking/README.md)**  
+  Includes code for detecting and tracking faces using computer vision techniques. This module may be used for features such as autonomous following or interactive behaviors based on face detection. The files contain classes to be used in other scripts but not executed directly.
+
+- **[`object_detection/`](./src/object_detection/README.md)**  
+  Houses functionality related to detecting objects within video feeds. This could be useful for obstacle avoidance, target recognition, or other advanced drone behaviors. The files contain classes to be used in other scripts but not executed directly
+
+
+- **[`joysticks/`](./src/joysticks/README.md)**  
+  Contains modules for interfacing with different joystick and game controller types. This folder enables the project to support multiple controller configurations for manual drone operation. The files contain classes to be used in other scripts but not executed directly
+
+- **[`services/`](./src/services/README.md)**  
+  Implements the core services for interacting with the Tello drone, such as establishing connections, sending commands, and managing the drone’s state. The files contain classes to be used in other scripts but not executed directly
+
 ## 📝 Exercises
 
 Dive into various [example exercises](./src/example_exercises) located in the `src` folder. Each script guides you through different functionalities of the DJI Tello drone.
@@ -31,10 +54,12 @@ Dive into various [example exercises](./src/example_exercises) located in the `s
 To run an exercise, navigate to the [`src`](./src/)  folder and execute the corresponding script:
 
 ```bash
-python src/<script_name>.py
+python ./<folder>/<script_name>.py
 ```
 
-Replace <script_name> with the script you wish to run.
+Replace <script_name> with the script you wish to run and <folder> with the folder/s the script is located in.
+
+For More info checkout the [README](./src/example_exercises/README.md)
 
 ## 🔍 Troubleshooting
 
