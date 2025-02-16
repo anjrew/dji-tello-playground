@@ -10,7 +10,7 @@ tello.streamon()
 frame_read = tello.get_frame_read()
 
 tello.takeoff()
-
+tello.move_up(10)
 script_dir = os.path.dirname(__file__)
 
 # The folder where the images will be stored
